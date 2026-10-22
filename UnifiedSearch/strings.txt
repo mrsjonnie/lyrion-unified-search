@@ -3,16 +3,16 @@ PLUGIN_UNIFIEDSEARCH
 	NL	Unified Search
 
 PLUGIN_UNIFIEDSEARCH_DESC
-	EN	Type to search all available sources and see the three best artist matches per source live.
-	NL	Typ om alle beschikbare bronnen te doorzoeken en direct de drie beste artiesten per bron te zien.
+	EN	Type to search available music, radio, and podcast sources and see up to three matches per source live.
+	NL	Typ om beschikbare muziek-, radio- en podcastbronnen te doorzoeken en direct maximaal drie resultaten per bron te zien.
 
 PLUGIN_UNIFIEDSEARCH_PLACEHOLDER
-	EN	Search for an artist...
-	NL	Zoek een artiest...
+	EN	Search music, radio, or podcasts...
+	NL	Zoek muziek, radio of podcasts...
 
 PLUGIN_UNIFIEDSEARCH_TYPE_TO_SEARCH
-	EN	Type an artist name to search all available sources.
-	NL	Typ een artiestennaam om alle beschikbare bronnen te doorzoeken.
+	EN	Type to search all available sources.
+	NL	Typ om alle beschikbare bronnen te doorzoeken.
 
 PLUGIN_UNIFIEDSEARCH_SEARCHING
 	EN	Searching...
@@ -49,3 +49,15 @@ PLUGIN_UNIFIEDSEARCH_DEEZER
 PLUGIN_UNIFIEDSEARCH_QOBUZ
 	EN	Qobuz
 	NL	Qobuz
+
+PLUGIN_UNIFIEDSEARCH_RADIONET
+	EN	Radio.net stations
+	NL	Radio.net-zenders
+
+PLUGIN_UNIFIEDSEARCH_PODCAST
+	EN	Podcasts
+	NL	Podcasts
+
+PLUGIN_UNIFIEDSEARCH_TIDAL
+	EN	TIDAL
+	NL	TIDAL

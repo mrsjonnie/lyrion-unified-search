@@ -39,7 +39,7 @@ sub initPlugin {
     }
 
     Slim::Control::Request::subscribe(\&_onPlaylistControl, [['playlistcontrol']]);
-    Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['play', 'load']]);
+    Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['play', 'load', 'playtracks']]);
     Slim::Control::Request::subscribe(\&_onPlaylistJump, [['playlist'], ['jump']]);
 }
 
@@ -67,7 +67,7 @@ sub _onPlaylistControl {
 
 sub _onPlaylistPlay {
     my ($request) = @_;
-    my $url = _requestTrackUrl($request, '_item', 'url');
+    my $url = _requestTrackUrl($request, '_item', 'listRef', 'url');
     _startCastForUrl($request->client, $url);
 }
 
@@ -130,6 +130,12 @@ sub _startCastForUrl {
     my ($client, $url) = @_;
     return unless $prefs->get('enabled');
 
+    my $videoId = _youtubeVideoId($url);
+    unless ($videoId) {
+        $log->debug("Play request did not contain a recognized original YouTube URL: " . ($url || '(empty URL)'));
+        return;
+    }
+
     my $host = _castHostForClient($client);
     $host =~ s/^\s+|\s+$//g;
     unless (length $host) {
@@ -142,12 +148,6 @@ sub _startCastForUrl {
     $warnedMissingHost = 0;
     unless (_validHost($host)) {
         $log->error('Configured Chromecast host is invalid');
-        return;
-    }
-
-    my $videoId = _youtubeVideoId($url);
-    unless ($videoId) {
-        $log->debug("Play request is not a YouTube track: $url");
         return;
     }
 
@@ -177,7 +177,7 @@ sub _startCastForUrl {
     @workers = grep { $_ && $_->alive } @workers;
     push @workers, $worker;
     my $playerName = $client && ($client->name || $client->id) || 'unknown LMS player';
-    $log->info("Started Chromecast YouTube cast for video $videoId on $playerName ($host)");
+    $log->info("Starting Chromecast YouTube cast for video $videoId on $playerName ($host)");
 }
 
 sub _castHostForClient {

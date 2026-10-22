@@ -7,8 +7,8 @@ PLUGIN_YOUTUBECAST_ENABLED
 	NL	Automatisch YouTube casten inschakelen
 
 PLUGIN_YOUTUBECAST_ENABLED_DESC
-	EN	When enabled, the original video starts in the native YouTube app when you choose Play for an LMS YouTube track; casting does not wait for LMS to start or transcode the audio. The selected LMS player determines the Chromecast target. Cast connection errors are logged in the LMS log directory.
-	NL	Als dit is ingeschakeld, start de originele video in de YouTube-app zodra je Afspelen kiest voor een LMS YouTube-track; casten wacht niet tot LMS de audio start of transcodeert. De geselecteerde LMS-speler bepaalt de Chromecast. Verbindingsfouten worden vastgelegd in de LMS-logmap.
+	EN	When enabled, the original video starts in the native YouTube app from the LMS Play request; casting does not wait for audio playback or transcoding. The selected LMS player determines the Chromecast target. Cast connection errors are logged in the LMS log directory.
+	NL	Als dit is ingeschakeld, start de originele video in de YouTube-app vanuit de LMS-afspeelopdracht; casten wacht niet op audioweergave of transcoding. De geselecteerde LMS-speler bepaalt de Chromecast. Verbindingsfouten worden vastgelegd in de LMS-logmap.
 
 PLUGIN_YOUTUBECAST_HOST
 	EN	Chromecast host or IP address
@@ -23,5 +23,13 @@ PLUGIN_YOUTUBECAST_PLAYER_HOSTS
 	NL	Chromecast per LMS-speler
 
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC
-	EN	Enter one mapping per line as Player Name=Chromecast IP or hostname. Use the player ID shown below instead of its name when names are duplicated. Hostnames such as living-room-tv.local are supported. The selected LMS player name is matched automatically when Play is pressed. Leave the general host blank if every player has its own mapping.
-	NL	Vul per regel een koppeling in als Spelernaam=Chromecast-IP-adres of hostnaam. Gebruik bij dubbele namen de speler-ID die hieronder staat in plaats van de naam. Hostnamen zoals woonkamer-tv.local worden ondersteund. Bij Afspelen wordt automatisch de naam van de geselecteerde LMS-speler gekoppeld. Laat het algemene adres leeg als elke speler een eigen koppeling heeft.
+	EN	Enter the Chromecast IP address or local hostname in the row for each LMS player. The selected player is matched automatically when Play is pressed. Use the player ID shown under its name to distinguish players with duplicate names. Leave a player's field blank to use the fallback host above. The LMS server must be able to reach the Chromecast on TCP port 8009.
+	NL	Vul het Chromecast-IP-adres of de lokale hostnaam in op de regel van elke LMS-speler. De geselecteerde speler wordt automatisch gekoppeld zodra je op Afspelen drukt. Gebruik de speler-ID onder de naam om spelers met dezelfde naam te onderscheiden. Laat het veld leeg om het standaardadres hierboven te gebruiken. De LMS-server moet de Chromecast kunnen bereiken via TCP-poort 8009.
+
+PLUGIN_YOUTUBECAST_PLAYER
+	EN	LMS player
+	NL	LMS-speler
+
+PLUGIN_YOUTUBECAST_NO_PLAYERS
+	EN	No LMS players are currently available. Connect a player and reopen this page to configure its Chromecast.
+	NL	Er zijn geen LMS-spelers beschikbaar. Verbind een speler en open deze pagina opnieuw om de Chromecast in te stellen.

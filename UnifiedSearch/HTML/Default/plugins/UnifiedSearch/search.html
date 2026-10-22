@@ -8,7 +8,7 @@
 			id="unifiedSearchInput"
 			type="text"
 			name="search"
-			size="40"
+			style="width:100%; max-width:40rem; box-sizing:border-box"
 			value="[% search | html %]"
 			autocomplete="off"
 			autofocus
@@ -35,7 +35,7 @@
 	var timer;
 	var activeRequests = [];
 	var requestId = 0;
-	var sourceOrder = ['local', 'youtube', 'spotty', 'spoton', 'deezer', 'qobuz'];
+	var sourceOrder = ['local', 'youtube', 'spotty', 'spoton', 'deezer', 'qobuz', 'radionet', 'podcast', 'tidal'];
 
 	function clearResults() {
 		while (results.firstChild) {
@@ -143,7 +143,9 @@
 		window.clearTimeout(timer);
 		timer = window.setTimeout(search, 250);
 	};
-	input.focus();
+	window.setTimeout(function () {
+		input.focus();
+	}, 0);
 }());
 </script>
 
