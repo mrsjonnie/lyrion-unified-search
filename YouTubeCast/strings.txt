@@ -7,8 +7,8 @@ PLUGIN_YOUTUBECAST_ENABLED
 	NL	Automatisch YouTube casten inschakelen
 
 PLUGIN_YOUTUBECAST_ENABLED_DESC
-	EN	When enabled, starting an LMS YouTube track also starts that video in the native YouTube app on the configured Chromecast.
-	NL	Als dit is ingeschakeld, start een LMS-YouTube-track ook dezelfde video in de YouTube-app op de ingestelde Chromecast.
+	EN	When enabled, the video starts in the native YouTube app as soon as LMS begins playing the selected YouTube track. This works whether or not LMS transcodes the audio. Cast connection errors are logged in the LMS log directory.
+	NL	Als dit is ingeschakeld, start de video in de YouTube-app zodra LMS de geselecteerde YouTube-track afspeelt. Dit werkt met en zonder transcoding door LMS. Verbindingsfouten worden vastgelegd in de LMS-logmap.
 
 PLUGIN_YOUTUBECAST_HOST
 	EN	Chromecast host or IP address

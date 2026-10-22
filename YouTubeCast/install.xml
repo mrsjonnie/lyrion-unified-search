@@ -3,7 +3,7 @@
     <name>PLUGIN_YOUTUBECAST</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Starts YouTube videos on a configured Google Cast device when an LMS YouTube track starts.</description>
+    <description>Starts casting as soon as an LMS YouTube track begins playback, independently of transcoding.</description>
     <category>interface</category>
     <id>c6ef34c4-ef6a-47b4-95a7-d62dfc486b6b</id>
     <module>Plugins::YouTubeCast::Plugin</module>
@@ -13,5 +13,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </extension>

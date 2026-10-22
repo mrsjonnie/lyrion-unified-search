@@ -9,7 +9,7 @@ use Slim::Utils::Log;
 use Slim::Utils::PluginManager;
 use Slim::Utils::Strings qw(string);
 
-our $VERSION = '0.3.3';
+our $VERSION = '0.3.4';
 
 my $enabled = 0;
 
