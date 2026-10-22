@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Live artist search with three top matches per source and full artist, album, and track results</desc>
-            <desc lang="NL">Live artiesten zoeken met drie resultaten per bron en volledige artiest-, album- en nummerresultaten</desc>
+            <desc lang="EN">Live search showing three artist matches per available source</desc>
+            <desc lang="NL">Live zoeken met drie artiesten per beschikbare bron</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"

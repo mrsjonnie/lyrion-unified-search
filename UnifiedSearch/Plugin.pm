@@ -5,14 +5,12 @@ use warnings;
 use base qw(Slim::Plugin::OPMLBased);
 
 use Slim::Menu::GlobalSearch;
-use Slim::Control::Request;
-use Slim::Control::XMLBrowser;
 use Slim::Utils::Log;
 use Slim::Utils::PluginManager;
 use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json);
 
-our $VERSION = '0.3.5';
+our $VERSION = '0.3.4';
 
 my $enabled = 0;
 
@@ -40,11 +38,6 @@ sub initPlugin {
         $log->error('UnifiedSearch could not register Global Search provider: ' . ($@ || 'unknown error'));
         return;
     }
-
-    Slim::Control::Request::addDispatch(
-        [ 'unifiedsearch', 'more', '_index', '_quantity' ],
-        [ 0, 1, 1, \&moreSearchCliQuery ]
-    );
 
     $enabled = 1;
 
@@ -109,15 +102,6 @@ sub applicationSearchFeed {
                 $item{name} = $result->{name} . ': ' . $name;
                 push @items, \%item;
             }
-
-            push @items, {
-                name        => $result->{name} . ' - ' . string('PLUGIN_UNIFIEDSEARCH_MORE'),
-                icon        => 'html/images/search.png',
-                type        => 'link',
-                url         => \&moreSearchFeedCallback,
-                passthrough => [{ source => $source, query => $query }],
-                cachetime   => 0,
-            };
         }
 
         $callback->({ items => \@items });
@@ -259,85 +243,6 @@ sub _itemName {
     return $item->{name} || $item->{artist} || $item->{album} || $item->{title} || $item->{channel} || '';
 }
 
-sub moreSearchFeedCallback {
-    my ($client, $callback, $args, $passthrough) = @_;
-    my $source = $passthrough && $passthrough->{source} || '';
-    my $query = $passthrough && $passthrough->{query} || '';
-    return $callback->({ items => [] }) unless length $query;
-
-    my $feed = moreSearchFeed($source, $query);
-    $callback->($feed || { items => [] });
-}
-
-sub moreSearchCliQuery {
-    my ($request) = @_;
-    my $source = $request->getParam('source') || '';
-    my $query = $request->getParam('search') || '';
-
-    if (!$enabled || !length($query)) {
-        $request->setStatusBadParams();
-        return;
-    }
-
-    my $feed = moreSearchFeed($source, $query);
-    if (!$feed) {
-        $request->setStatusBadParams();
-        return;
-    }
-
-    Slim::Control::XMLBrowser::cliQuery('unifiedsearch', $feed, $request);
-}
-
-sub moreSearchFeed {
-    my ($source, $query) = @_;
-
-    my %categories = (
-        local => [
-            [ 'PLUGIN_UNIFIEDSEARCH_ARTISTS', 'artist' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_ALBUMS',  'album' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_TRACKS',  'track' ],
-        ],
-        youtube => [
-            [ 'PLUGIN_UNIFIEDSEARCH_CHANNELS', 'channel' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_VIDEOS',   'video' ],
-        ],
-        spotty => [
-            [ 'PLUGIN_UNIFIEDSEARCH_ARTISTS', 'artist' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_ALBUMS',  'album' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_TRACKS',  'track' ],
-        ],
-        spoton => [
-            [ 'PLUGIN_UNIFIEDSEARCH_ARTISTS', 'artist' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_ALBUMS',  'album' ],
-            [ 'PLUGIN_UNIFIEDSEARCH_TRACKS',  'track' ],
-        ],
-    );
-
-    return unless $categories{$source};
-
-    my %handler = (
-        local   => \&localSearchFeed,
-        youtube => \&youtubeSearchFeed,
-        spotty  => \&spottySearchFeed,
-        spoton  => \&spotonSearchFeed,
-    );
-    my $name = string('PLUGIN_UNIFIEDSEARCH_' . uc($source));
-
-    return {
-        name  => $name,
-        type  => 'opml',
-        items => [ map {
-            {
-                name        => string($_->[0]),
-                type        => 'link',
-                url         => $handler{$source},
-                passthrough => [{ query => $query, result_type => $_->[1], all_results => 1 }],
-                cachetime   => 0,
-            }
-        } @{ $categories{$source} } ],
-    };
-}
-
 sub getDisplayName {
     return 'Lyrion Unified Search';
 }
@@ -430,19 +335,11 @@ sub localSearchFeed {
 
     my %search_args = $args ? %{$args} : ();
     $search_args{search} = $query;
-    $search_args{quantity} = 3 unless $passthrough && $passthrough->{all_results};
+    $search_args{quantity} = 3;
 
-    my %mode = (
-        artist => \&Slim::Menu::BrowseLibrary::_artists,
-        album  => \&Slim::Menu::BrowseLibrary::_albums,
-        track  => \&Slim::Menu::BrowseLibrary::_tracks,
-    );
-    my $search = $passthrough && $passthrough->{result_type} || 'artist';
-    return $callback->({ items => [] }) unless $mode{$search};
-
-    $mode{$search}->(
+    Slim::Menu::BrowseLibrary::_artists(
         $client,
-        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_LOCAL'), $passthrough && $passthrough->{all_results} ? undef : 3),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_LOCAL'), 3),
         \%search_args,
         {},
     );
@@ -453,14 +350,13 @@ sub youtubeSearchFeed {
     my $query = $passthrough && $passthrough->{query} // '';
     my %search_args = $args ? %{$args} : ();
     $search_args{search} = $query;
-    $search_args{quantity} = 3 unless $passthrough && $passthrough->{all_results};
-    my $type = $passthrough && $passthrough->{result_type} || 'channel';
+    $search_args{quantity} = 3;
 
     Plugins::YouTube::Plugin::searchHandler(
         $client,
-        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'), $passthrough && $passthrough->{all_results} ? undef : 3),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'), 3),
         \%search_args,
-        { type => $type },
+        { type => 'channel' },
     );
 }
 
@@ -469,14 +365,13 @@ sub spottySearchFeed {
     my $query = $passthrough && $passthrough->{query} // '';
     my %search_args = $args ? %{$args} : ();
     $search_args{search} = $query;
-    $search_args{quantity} = 3 unless $passthrough && $passthrough->{all_results};
-    my $type = $passthrough && $passthrough->{result_type} || 'artist';
+    $search_args{quantity} = 3;
 
     Plugins::Spotty::OPML::search(
         $client,
-        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTTY'), $passthrough && $passthrough->{all_results} ? undef : 3),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTTY'), 3),
         \%search_args,
-        { type => $type },
+        { type => 'artist' },
     );
 }
 
@@ -484,14 +379,13 @@ sub spotonSearchFeed {
     my ($client, $callback, $args, $passthrough) = @_;
     my $query = $passthrough && $passthrough->{query} // '';
     my %search_args = $args ? %{$args} : ();
-    $search_args{quantity} = 3 unless $passthrough && $passthrough->{all_results};
-    my $type = $passthrough && $passthrough->{result_type} || 'artist';
+    $search_args{quantity} = 3;
 
     Plugins::SpotOn::Plugin::_searchTypeFeed(
         $client,
-        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTON'), $passthrough && $passthrough->{all_results} ? undef : 3),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTON'), 3),
         \%search_args,
-        { query => $query, type => $type },
+        { query => $query, type => 'artist' },
     );
 }
 

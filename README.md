@@ -7,7 +7,6 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 - Registers as a real LMS application so Material Skin lists **Unified Search** under **Apps/Applications**, and keeps the Browse menu entry in the LMS Default skin.
 - Opens a search prompt in Material Skin and a focused, live-search field in the Default skin.
 - Shows up to **three artist matches per source** from the local library, **YouTube**, **Spotify (Spotty)**, and **SpotOn** as the query is typed.
-- Provides a **More results** feed per source for browsing artists, albums, and tracks (and YouTube channels and videos).
 - Uses LMS's built-in browse feeds and the YouTube, Spotty, and SpotOn plugins' native search callbacks.
 - Registers with LMS Global Search; Material discovers the application through LMS's standard `OPMLBased` app registry. No Material Skin files are modified.
 - Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.

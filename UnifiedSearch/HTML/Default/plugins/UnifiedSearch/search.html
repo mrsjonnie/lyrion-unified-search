@@ -43,20 +43,7 @@
 		}
 	}
 
-	function addMoreLink(section, source, query) {
-		var more = document.createElement('a');
-		var url = webroot + 'clixmlbrowser/clicmd=unifiedsearch+more&source=' +
-			encodeURIComponent(source) + '&search=' + encodeURIComponent(query);
-
-		if (player) {
-			url += '&player=' + encodeURIComponent(player);
-		}
-		more.href = url + '/index.html?index=0';
-		more.appendChild(document.createTextNode('[% "PLUGIN_UNIFIEDSEARCH_MORE" | string %]'));
-		section.appendChild(more);
-	}
-
-	function render(data, source, query) {
+	function render(data, source) {
 		var result = data.sources && data.sources[source];
 		if (!result) {
 			return false;
@@ -86,7 +73,6 @@
 			list.appendChild(empty);
 		}
 		section.appendChild(list);
-		addMoreLink(section, source, query);
 		results.appendChild(section);
 		return count > 0;
 	}
@@ -126,7 +112,7 @@
 					try {
 						var data = JSON.parse(xhr.responseText);
 						failed = !!(data.sources && data.sources[source] && data.sources[source].error) || failed;
-						hasResults = render(data, source, query) || hasResults;
+						hasResults = render(data, source) || hasResults;
 					}
 					catch (error) {
 						failed = true;
