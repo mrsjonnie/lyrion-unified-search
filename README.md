@@ -5,7 +5,7 @@ A standalone add-on for Lyrion Music Server (LMS) that adds one grouped entry to
 ## Current implementation
 
 - Registers a **Unified Search** provider using LMS's `Slim::Menu::GlobalSearch` extension API.
-- Adds a local-library destination that opens the LMS web search page on the configured home-server address currently used by the author: `http://192.168.178.99:9001`.
+- Adds a local-library destination that opens the LMS web search page on the home-server address currently used by the author: `http://192.168.178.99:9001`.
 - Reuses YouTube's existing search handler when the YouTube plugin is installed and enabled.
 - Reuses SpotOn's existing search feed when SpotOn is installed and enabled.
 - Does not edit Material Skin, YouTube, SpotOn, LMS core, or the Default skin.
@@ -20,15 +20,15 @@ The initial implementation groups the three source actions under one search-prov
 
 ## Installation
 
-A tagged release is packaged by GitHub Actions as `UnifiedSearch-VERSION.zip`. After the first release is published, add this repository URL in **LMS Settings → Plugins → Additional Repositories**:
+The initial `0.1.0` package and LMS repository metadata are published in this repository. Add this URL in **LMS Settings → Plugins → Additional Repositories**:
 
 ```
 https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
 ```
 
-Then apply the changes, install **Lyrion Unified Search**, and restart LMS if requested.
+Click **Apply**, find **Lyrion Unified Search**, install it, and restart LMS if requested.
 
-To publish a release, push a version tag such as `v0.1.0`. The release workflow creates the plugin ZIP, calculates its SHA-1, publishes a GitHub release, and updates `repo.xml` on `main`.
+The package ZIP is stored at `dist/UnifiedSearch-0.1.0.zip`. For later releases, push a version tag such as `v0.1.1`. The release workflow creates a versioned plugin ZIP, calculates its SHA-1, publishes a GitHub release, and updates `repo.xml` on `main`.
 
 ## Uninstall
 
@@ -40,4 +40,4 @@ Disable and uninstall **Lyrion Unified Search** through LMS's plugin settings. T
 - LMS repository template: `repo.xml.in`
 - Release workflow: `.github/workflows/release.yml`
 
-The first release still needs an end-to-end test on the author's LMS instance, especially the local web-search link and the installed versions of YouTube and SpotOn.
+The package has not yet been end-to-end tested on the author's LMS instance, especially the local web-search link and the installed versions of YouTube and SpotOn.
