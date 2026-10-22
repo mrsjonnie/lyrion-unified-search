@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           sed \
-            -e "s/version=\"0.1.0\"/version=\"0.1.2\"/" \
+            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.2\"/" \
             -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
             -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
             repo.xml.in > repo.xml
@@ -67,7 +67,7 @@ jobs:
           git fetch origin main
           git checkout main
           sed \
-            -e "s/version=\"0.1.0\"/version=\"0.1.2\"/" \
+            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.2\"/" \
             -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
             -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
             repo.xml.in > repo.xml
