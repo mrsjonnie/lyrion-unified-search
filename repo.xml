@@ -12,28 +12,28 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.1.9"
+            version="0.2.0"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="df9696799784f04f429bd66b1526850410ef8a2c"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.9/UnifiedSearch-0.1.9.zip"
+            sha="8e280cc597077e3e5f85198753b4326664c01c16"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.2.0/UnifiedSearch-0.2.0.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Local library and SpotOn Spotify search alongside native LMS search providers</desc>
-            <desc lang="NL">Zoeken in de lokale bibliotheek en Spotify via SpotOn naast de bestaande LMS-zoekproviders</desc>
+            <desc lang="EN">Unified Search entry in Material Applications and Default Browse menus, with local library and SpotOn results</desc>
+            <desc lang="NL">Unified Search in Toepassingen van Material en in Bladeren van Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
-            version="0.1.4"
+            version="0.1.5"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="fe9c7369ee0b96196d3b91190ddb2ae07ad8a83f"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.9/DefaultLogoHome-0.1.4.zip"
+            sha="353fc4efc030657b316bef6dc1ff1d54234b7ec7"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.2.0/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
         >
