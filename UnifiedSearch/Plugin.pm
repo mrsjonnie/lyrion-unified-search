@@ -77,7 +77,7 @@ sub searchFeed {
     push @items, {
         name        => 'Local library (LMS)',
         type        => 'link',
-        url         => \\&Slim::Menu::BrowseLibrary::_tracks,
+        url         => \&Slim::Menu::BrowseLibrary::_tracks,
         passthrough => [{ search => $query }],
         cachetime   => 0,
     };
@@ -87,7 +87,7 @@ sub searchFeed {
         push @items, {
             name        => 'YouTube',
             type        => 'link',
-            url         => \\&Plugins::YouTube::Plugin::searchHandler,
+            url         => \&Plugins::YouTube::Plugin::searchHandler,
             passthrough => [{ q => $query }],
             cachetime   => 0,
         };
@@ -101,7 +101,7 @@ sub searchFeed {
         push @items, {
             name        => 'Spotify (SpotOn)',
             type        => 'link',
-            url         => \\&Plugins::SpotOn::Plugin::_searchFromHistoryFeed,
+            url         => \&Plugins::SpotOn::Plugin::_searchFromHistoryFeed,
             passthrough => [{ query => $query }],
             cachetime   => 0,
         };
