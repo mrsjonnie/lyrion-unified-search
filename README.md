@@ -5,8 +5,8 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 ## What it does
 
 - Registers as a real LMS application so Material Skin lists **Unified Search** under **Apps/Applications**, and keeps the Browse menu entry in the LMS Default skin.
-- Opens a focused, live-search field directly from the app page and Browse entry in the Default skin; Material uses its native search prompt.
-- Shows up to **three matches per source** from the local library, **YouTube**, **Spotify (Spotty)**, **SpotOn**, **Deezer**, **Qobuz**, **Radio.net stations**, **Podcasts**, and **TIDAL** as the query is typed.
+- Opens a search prompt in Material Skin and a focused, live-search field in the Default skin.
+- Shows up to **three artist matches per source** from the local library, **YouTube**, **Spotify (Spotty)**, **SpotOn**, **Deezer**, and **Qobuz** as the query is typed.
 - Opens the focused artist search field immediately in the Default skin and uses the enabled streaming plugins' native search callbacks.
 - Registers with LMS Global Search; Material discovers the application through LMS's standard `OPMLBased` app registry. No Material Skin files are modified.
 - Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.
@@ -14,9 +14,10 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 The repository also includes **YouTube Cast for Chromecast**, a separate add-on
 that starts the native YouTube app on a configured Google Cast device whenever
 an LMS YouTube track receives a Play request. Casting uses the original track
-URL and does not wait for LMS to start or transcode the audio. Enable automatic
-casting and set the Chromecast IP address or local hostname beside each LMS
-player in the add-on settings; the selected player determines the target.
+URL, starts the native YouTube app using its MDX/Lounge session, and does not
+wait for LMS to start or transcode the audio. Enable automatic casting and set
+the Chromecast IP address or local hostname beside each LMS player in the
+add-on settings; the selected player determines the target.
 The LMS YouTube plugin streams audio to its selected LMS player; this add-on
 independently starts the video on the mapped TV.
 Cast connection failures are written to `youtubecast-worker.log` in the LMS
@@ -25,8 +26,8 @@ log directory.
 ## Compatibility and requirements
 
 - LMS 8.0 or newer.
-- YouTube, Spotty, SpotOn, Deezer, Qobuz, Podcasts, and TIDAL are optional; matches appear only when the corresponding plugin is enabled and its search callback is available. Radio.net results are live station matches from radio.net.
-- YouTube Cast requires a Chromecast with the native YouTube app, the LMS YouTube plugin, and a mapped host reachable from LMS on TCP port 8009.
+- YouTube, Spotty, SpotOn, Deezer, and Qobuz are optional; matches appear only when the corresponding plugin is enabled and its search callback is available.
+- YouTube Cast requires a Chromecast or Google Cast-enabled TV with the native YouTube app, the LMS YouTube plugin, and a mapped device host reachable from LMS on TCP port 8009. Enter only the device IP or hostname, not a URL or port.
 - Local search uses LMS's native browse feeds, including search categories and virtual-library handling; it does not route OPML clients to the HTML search page.
 - The app and its result entries use LMS's built-in search icon.
 

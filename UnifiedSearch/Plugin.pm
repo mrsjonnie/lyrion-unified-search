@@ -7,12 +7,10 @@ use base qw(Slim::Plugin::OPMLBased);
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
 use Slim::Utils::PluginManager;
-use Slim::Utils::Prefs;
 use Slim::Utils::Strings qw(string);
-use JSON::XS qw(encode_json decode_json);
-use URI::Escape qw(uri_escape_utf8);
+use JSON::XS qw(encode_json);
 
-our $VERSION = '0.3.6';
+our $VERSION = '0.3.7';
 
 my $enabled = 0;
 
@@ -45,13 +43,12 @@ sub initPlugin {
 
     if (main::WEBUI) {
         require Slim::Web::Pages;
-        my $searchPage = sub {
+        Slim::Web::Pages->addPageFunction('plugins/UnifiedSearch/search.html', sub {
             return \'' unless $enabled;
 
             my ($client, $params) = @_;
             return Slim::Web::HTTP::filltemplatefile('plugins/UnifiedSearch/search.html', $params);
-        };
-        Slim::Web::Pages->addPageFunction('plugins/UnifiedSearch/search.html', $searchPage);
+        });
         Slim::Web::Pages->addPageFunction('plugins/UnifiedSearch/results.json', \&searchResultsHandler);
         Slim::Web::Pages->addPageLinks('browse', {
             'PLUGIN_UNIFIEDSEARCH' => 'plugins/UnifiedSearch/search.html',
@@ -66,10 +63,6 @@ sub initPlugin {
         type   => 'link',
         weight => 100,
     );
-
-    if (main::WEBUI) {
-        Slim::Web::Pages->addPageFunction('plugins/unifiedsearch/index.html', $searchPage);
-    }
 
     $log->debug('UnifiedSearch registered Global Search provider');
 }
@@ -93,11 +86,11 @@ sub applicationSearchFeed {
     my $query = $args && $args->{search} // '';
     return $callback->({ items => [] }) unless length $query;
 
-    _searchSources($client, $query, undef, sub {
+    _searchTopArtists($client, $query, undef, sub {
         my ($sources) = @_;
         my @items;
 
-        for my $source (qw(local youtube spotty spoton deezer qobuz radionet podcast tidal)) {
+        for my $source (qw(local youtube spotty spoton deezer qobuz)) {
             my $result = $sources->{$source};
             next unless $result;
             for my $hit (@{ $result->{items} || [] }) {
@@ -125,7 +118,7 @@ sub searchResultsHandler {
         return $callback->($client, $params, \$json, $httpClient, $response);
     }
 
-    _searchSources($client, $query, $params->{source}, sub {
+    _searchTopArtists($client, $query, $params->{source}, sub {
         my ($sources) = @_;
         my %formatted;
         for my $source (keys %$sources) {
@@ -140,7 +133,7 @@ sub searchResultsHandler {
     });
 }
 
-sub _searchSources {
+sub _searchTopArtists {
     my ($client, $query, $source_filter, $callback) = @_;
     my @searches = ({
         key         => 'local',
@@ -221,42 +214,6 @@ sub _searchSources {
         }
         elsif (!$loaded) {
             $log->warn('Qobuz live search unavailable: ' . ($@ || 'could not load plugin'));
-        }
-    }
-
-    if (Slim::Utils::PluginManager->isEnabled('Slim::Plugin::Podcast::Plugin')) {
-        my $loaded = eval { require Slim::Plugin::Podcast::Plugin; 1 };
-        if ($loaded && Slim::Plugin::Podcast::Plugin->can('searchHandler')) {
-            push @searches, {
-                key         => 'podcast',
-                name        => string('PLUGIN_UNIFIEDSEARCH_PODCAST'),
-                handler     => \&podcastSearchFeed,
-                passthrough => { query => $query },
-            };
-        }
-        elsif (!$loaded) {
-            $log->warn('Podcast live search unavailable: ' . ($@ || 'could not load plugin'));
-        }
-    }
-
-    push @searches, {
-        key     => 'radionet',
-        name    => string('PLUGIN_UNIFIEDSEARCH_RADIONET'),
-        handler => \&radionetSearchFeed,
-    };
-
-    if (Slim::Utils::PluginManager->isEnabled('Plugins::TIDAL::Plugin')) {
-        my $loaded = eval { require Plugins::TIDAL::Plugin; 1 };
-        if ($loaded && Plugins::TIDAL::Plugin->can('search')) {
-            push @searches, {
-                key         => 'tidal',
-                name        => string('PLUGIN_UNIFIEDSEARCH_TIDAL'),
-                handler     => \&tidalSearchFeed,
-                passthrough => { query => $query },
-            };
-        }
-        elsif (!$loaded) {
-            $log->warn('Tidal live search unavailable: ' . ($@ || 'could not load plugin'));
         }
     }
 
@@ -437,55 +394,6 @@ sub searchInfoMenu {
         }
     }
 
-    if (Slim::Utils::PluginManager->isEnabled('Slim::Plugin::Podcast::Plugin')) {
-        my $loaded = eval { require Slim::Plugin::Podcast::Plugin; 1 };
-        if (!$loaded) {
-            $log->warn('Podcast search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
-        }
-        elsif (Slim::Plugin::Podcast::Plugin->can('searchHandler')) {
-            push @items, {
-                name        => string('PLUGIN_UNIFIEDSEARCH_PODCAST'),
-                icon        => 'html/images/search.png',
-                type        => 'link',
-                url         => \&podcastSearchFeed,
-                passthrough => [{ query => $query }],
-                cachetime   => 0,
-            };
-        }
-        else {
-            $log->warn('Podcast search unavailable: searchHandler callback not found');
-        }
-    }
-
-    push @items, {
-        name        => string('PLUGIN_UNIFIEDSEARCH_RADIONET'),
-        icon        => 'html/images/search.png',
-        type        => 'link',
-        url         => \&radionetSearchFeed,
-        passthrough => [{ query => $query }],
-        cachetime   => 0,
-    };
-
-    if (Slim::Utils::PluginManager->isEnabled('Plugins::TIDAL::Plugin')) {
-        my $loaded = eval { require Plugins::TIDAL::Plugin; 1 };
-        if (!$loaded) {
-            $log->warn('Tidal search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
-        }
-        elsif (Plugins::TIDAL::Plugin->can('search')) {
-            push @items, {
-                name        => string('PLUGIN_UNIFIEDSEARCH_TIDAL'),
-                icon        => 'html/images/search.png',
-                type        => 'link',
-                url         => \&tidalSearchFeed,
-                passthrough => [{ query => $query }],
-                cachetime   => 0,
-            };
-        }
-        else {
-            $log->warn('Tidal search unavailable: search callback not found');
-        }
-    }
-
     $log->debug('UnifiedSearch returning ' . scalar(@items) . ' search item(s)');
     return @items ? \@items : undef;
 }
@@ -577,109 +485,6 @@ sub qobuzSearchFeed {
         _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_QOBUZ'), 3),
         \%search_args,
         { q => $query, type => 'artists' },
-    );
-}
-
-sub podcastSearchFeed {
-    my ($client, $callback, $args, $passthrough) = @_;
-    my $query = $passthrough && $passthrough->{query} // '';
-    my $provider = Slim::Plugin::Podcast::Plugin::getProviderByName();
-    my ($search_item) = grep {
-        ref $_ eq 'HASH' && (!$_->{type} || $_->{type} eq 'search') && !$_->{enclosure}
-    } @{ $provider->getMenuItems($client) || [] };
-
-    unless ($search_item) {
-        $log->warn('Podcast live search unavailable: selected provider has no search item');
-        return $callback->({ items => [], search_error => 1 });
-    }
-
-    my %search_args = $args ? %{$args} : ();
-    $search_args{search} = $query;
-    $search_args{quantity} = 3;
-
-    Slim::Plugin::Podcast::Plugin::searchHandler(
-        $client,
-        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_PODCAST'), 3),
-        \%search_args,
-        { provider => $provider, item => $search_item },
-    );
-}
-
-sub radionetSearchFeed {
-    my ($client, $callback, $args, $passthrough) = @_;
-    my $query = $passthrough && $passthrough->{query};
-    $query = $args->{search} if !defined $query && $args;
-    $query ||= '';
-    my $language = lc(preferences('server')->get('language') || 'en');
-    $language = 'en' unless $language =~ /\A[a-z]{2}\z/;
-    my $url = 'https://prod.radio-api.net/stations/search?query='
-        . uri_escape_utf8($query) . '&language=' . $language;
-
-    require Slim::Networking::SimpleAsyncHTTP;
-    Slim::Networking::SimpleAsyncHTTP->new(
-        sub {
-            my $response = shift;
-            my $result = eval { decode_json($response->content) };
-            if ($@ || ref $result ne 'HASH') {
-                $log->warn('Radio.net search returned invalid JSON: ' . ($@ || 'unexpected response'));
-                return $callback->({ items => [], search_error => 1 });
-            }
-
-            my @items;
-            my $playables = $result->{playables};
-            for my $station (ref $playables eq 'ARRAY' ? @$playables : ()) {
-                next unless ref $station eq 'HASH' && ($station->{type} || '') eq 'STATION';
-                my $streams = $station->{streams};
-                my @streams = ref $streams eq 'ARRAY' ? @$streams
-                    : ref $streams eq 'HASH' ? ($streams)
-                    : ();
-                my ($stream) = grep {
-                    ref $_ eq 'HASH'
-                        && ($_->{status} || '') eq 'VALID'
-                        && ($_->{url} || '') =~ m{\Ahttps?://}i
-                } @streams;
-                next unless $stream;
-
-                my @details = grep { defined && length } (
-                    $station->{city},
-                    $station->{country},
-                    ref $station->{genres} eq 'ARRAY' ? join(', ', @{ $station->{genres} }) : '',
-                );
-                next unless defined $station->{name} && length $station->{name};
-                push @items, {
-                    type        => 'audio',
-                    name        => $station->{name},
-                    url         => $stream->{url},
-                    image       => $station->{logo175x175} || $station->{logo100x100} || '',
-                    description => join(', ', @details),
-                };
-                last if @items == 3;
-            }
-
-            $callback->({
-                name  => string('PLUGIN_UNIFIEDSEARCH_RADIONET'),
-                items => \@items,
-            });
-        },
-        sub {
-            $log->warn('Radio.net station search failed: ' . ($_[1] || 'unknown network error'));
-            $callback->({ items => [], search_error => 1 });
-        },
-        { cache => 1, expires => 600 },
-    )->get($url);
-}
-
-sub tidalSearchFeed {
-    my ($client, $callback, $args, $passthrough) = @_;
-    my $query = $passthrough && $passthrough->{query} // '';
-    my %search_args = $args ? %{$args} : ();
-    $search_args{quantity} = 3;
-
-    Plugins::TIDAL::Plugin::search(
-        $client,
-        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_TIDAL'), 3),
-        \%search_args,
-        { query => $query, type => 'artists' },
     );
 }
 

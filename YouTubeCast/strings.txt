@@ -15,16 +15,16 @@ PLUGIN_YOUTUBECAST_HOST
 	NL	Hostnaam of IP-adres van de Chromecast
 
 PLUGIN_YOUTUBECAST_HOST_DESC
-	EN	Optional fallback Chromecast IP address or local hostname, used when the selected LMS player has no mapping below.
-	NL	Optioneel standaard-IP-adres of lokale hostnaam van de Chromecast; gebruikt wanneer de geselecteerde LMS-speler hieronder geen koppeling heeft.
+	EN	Optional fallback Chromecast IP address or local hostname, used when the selected LMS player has no mapping below. Enter only the host or IP (no http:// and no port); the LMS server connects to TCP port 8009.
+	NL	Optioneel standaard-IP-adres of lokale hostnaam van de Chromecast; gebruikt wanneer de geselecteerde LMS-speler hieronder geen koppeling heeft. Vul alleen de hostnaam of het IP in (geen http:// en geen poort); de LMS-server maakt verbinding via TCP-poort 8009.
 
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS
 	EN	Chromecast for each LMS player
 	NL	Chromecast per LMS-speler
 
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC
-	EN	Enter the Chromecast IP address or local hostname in the row for each LMS player. The selected player is matched automatically when Play is pressed. Use the player ID shown under its name to distinguish players with duplicate names. Leave a player's field blank to use the fallback host above. The LMS server must be able to reach the Chromecast on TCP port 8009.
-	NL	Vul het Chromecast-IP-adres of de lokale hostnaam in op de regel van elke LMS-speler. De geselecteerde speler wordt automatisch gekoppeld zodra je op Afspelen drukt. Gebruik de speler-ID onder de naam om spelers met dezelfde naam te onderscheiden. Laat het veld leeg om het standaardadres hierboven te gebruiken. De LMS-server moet de Chromecast kunnen bereiken via TCP-poort 8009.
+	EN	Enter the Chromecast or Google Cast-enabled TV IP address or local hostname in the row for each LMS player. Enter only the host or IP (no http:// and no port). The selected player is matched automatically when Play is pressed. The LMS server must be able to reach the device on TCP port 8009; the LMS player IP is not the Chromecast address.
+	NL	Vul het IP-adres of de lokale hostnaam in van de Chromecast of Google Cast-tv voor elke LMS-speler. Vul alleen de hostnaam of het IP in (geen http:// en geen poort). De geselecteerde speler wordt automatisch gekoppeld zodra je op Afspelen drukt. De LMS-server moet het apparaat kunnen bereiken via TCP-poort 8009; het IP-adres van de LMS-speler is niet het Chromecast-adres.
 
 PLUGIN_YOUTUBECAST_PLAYER
 	EN	LMS player
