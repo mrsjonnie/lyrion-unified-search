@@ -3,7 +3,7 @@
     <name>Lyrion Unified Search</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Live search showing up to three music, radio, and podcast matches per available source.</description>
+    <description>Live search showing up to three music, BBC Sounds, radio, and podcast matches per available source.</description>
     <category>musicservices</category>
     <id>2c03f0a2-8b53-4f4d-a171-5d2b5c1b91a7</id>
     <icon>html/images/search.png</icon>
@@ -14,5 +14,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.3.9</version>
+    <version>0.3.10</version>
 </extension>

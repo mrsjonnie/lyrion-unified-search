@@ -6,7 +6,7 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 - Registers as a real LMS application so Material Skin lists **Unified Search** under **Apps/Applications**, and keeps the Browse menu entry in the LMS Default skin.
 - Opens the app directly to a focused, live-search field, without an intermediate Unified Search item/button.
-- Shows up to **three matches per source** from the local library, **YouTube**, **Spotify (Spotty)**, **SpotOn**, **Deezer**, **Qobuz**, **Radio.net stations**, and **Podcasts** as the query is typed.
+- Shows up to **three matches per source** from the local library, **YouTube**, **Spotify (Spotty)**, **SpotOn**, **Deezer**, **Qobuz**, **BBC Sounds**, **Radio.net stations**, and **Podcasts** as the query is typed.
 - Opens the focused artist search field immediately in the Default skin and uses the enabled streaming plugins' native search callbacks.
 - Registers with LMS Global Search; Material discovers the application through LMS's standard `OPMLBased` app registry. No Material Skin files are modified.
 - Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.
@@ -27,7 +27,7 @@ log directory.
 ## Compatibility and requirements
 
 - LMS 8.0 or newer.
-- YouTube, Spotty, SpotOn, Deezer, Qobuz, and Podcasts are optional; matches appear only when the corresponding plugin is enabled and its search callback is available. Radio.net stations are searched live.
+- YouTube, Spotty, SpotOn, Deezer, Qobuz, BBC Sounds, and Podcasts are optional; matches appear only when the corresponding plugin is enabled and its search callback is available. Radio.net stations are searched live.
 - YouTube Cast requires a Chromecast or Google Cast-enabled TV with the native YouTube app, the LMS YouTube plugin, and a mapped device host reachable from LMS on TCP port 8009. Enter only the device IP or hostname, not a URL or port.
 - Local search uses LMS's native browse feeds, including search categories and virtual-library handling; it does not route OPML clients to the HTML search page.
 - The app and its result entries use LMS's built-in search icon.
