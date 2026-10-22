@@ -1,4 +1,7 @@
 PLUGIN_DEFAULTLOGOHOME
-    Default Logo → LMS Home
+	EN	Default Logo → LMS Home
+	NL	Default-logo → LMS-startpagina
+
 PLUGIN_DEFAULTLOGOHOME_DESC
-    Makes the Lyrion logo in the Default skin open the LMS home page.
+	EN	Makes the Lyrion logo in the Default skin open the LMS home page.
+	NL	Laat het Lyrion-logo in de Default-skin de LMS-startpagina openen.
