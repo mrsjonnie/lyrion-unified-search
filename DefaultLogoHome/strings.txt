@@ -1,0 +1,4 @@
+PLUGIN_DEFAULTLOGOHOME
+    Default Logo → LMS Home
+PLUGIN_DEFAULTLOGOHOME_DESC
+    Makes the Lyrion logo in the Default skin open the LMS home page.
