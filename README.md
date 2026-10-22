@@ -1,36 +1,49 @@
 # Lyrion Unified Search
 
-A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Global Search, including Material Skin's existing globalsearch items request.
+A standalone add-on for Lyrion Music Server (LMS). It adds a **Unified Search** entry to LMS's **My Music / Browse Library** menu so one query can be routed to the local library, YouTube, or Spotify through SpotOn.
 
-## What it does
+## How it works
 
-- Adds a **Local library** item that opens the LMS web search page.
-- Adds **Spotify (SpotOn)** as a direct search item by calling SpotOn's existing search-feed callback.
-- Leaves YouTube's native Global Search provider intact, so it appears alongside the new entries when the YouTube plugin is enabled.
-- Returns individual search items rather than a nested submenu. This matters because Material Skin renders the top-level Global Search items.
-- Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.
+1. Open **My Music / Browse Library → Unified Search**.
+2. Enter one search term.
+3. Choose the source to open its existing results:
+   - **Local library (LMS)** — opens LMS's native track search for that query.
+   - **YouTube** — calls the installed YouTube plugin's existing search handler.
+   - **Spotify (SpotOn)** — calls SpotOn's existing search-feed callback.
 
-## Compatibility and requirements
+The source choice is one extra click after the query. The results themselves remain rendered and played by their existing LMS/plugin integrations; this add-on does not duplicate search APIs or playback logic.
+
+## Compatibility and safety
 
 - LMS 8.0 or newer.
-- SpotOn is optional; the Spotify entry appears only when Plugins::SpotOn::Plugin is enabled and its existing search callback is available.
-- The local-library URL currently targets http://192.168.178.99:9001, the LMS address used for this installation. Change it if LMS is hosted elsewhere.
-- YouTube's own provider is not duplicated by this plugin.
+- YouTube and SpotOn are optional; their entries are shown only when their plugin and search callback are available.
+- Uses LMS's supported `Slim::Menu::BrowseLibrary->registerNode` extension point.
+- Does not modify Material Skin, the Default skin, LMS core, YouTube, SpotOn, or their configuration files.
+- The local-library result uses LMS's native Browse Library track-search callback; no hard-coded home-network URL is used.
 
 ## Install
 
-Add this repository in **LMS Settings → Plugins → Additional Repositories**:
+The currently published release is still the previous stable version. This branch is a development draft and is not published as an installable release yet. Do not install it until the query flow and all three providers have been tested on a real LMS instance.
 
+Add the repository in **LMS Settings → Plugins → Additional Repositories** after a release is published:
+
+```
 https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
+```
 
-Click **Apply**, install **Lyrion Unified Search**, and restart LMS if requested.
+## Validation still required
 
-## Development and release
+Before release, test on the target LMS instance:
 
-- Plugin source: UnifiedSearch/Plugin.pm
-- Repository template: repo.xml.in
-- Release workflow: .github/workflows/release.yml
+- Plugin loads and the Unified Search item appears under Browse Library.
+- A query returns the local-library entry.
+- YouTube results open when the YouTube plugin is enabled.
+- SpotOn results open when SpotOn is enabled.
+- Missing optional plugins do not prevent the other sources from working.
+- Disabling/uninstalling Unified Search removes only its own Browse Library node.
 
-The GitHub Actions workflow packages both add-ons, calculates their SHA-1 hashes, updates repo.xml, and publishes the version declared in UnifiedSearch/install.xml. Bump that version before publishing a new release.
+## Development
 
-The package still needs an end-to-end check on the target LMS/Material Skin installation. In particular, confirm that the Spotify entry appears in Material Skin and opens SpotOn's search results.
+- Plugin source: `UnifiedSearch/Plugin.pm`
+- Repository descriptor: `repo.xml`
+- Release workflow: `.github/workflows/release.yml`
