@@ -13,10 +13,7 @@ sub initPlugin {
 
     Slim::Web::Pages->addPageFunction("js-main-logo-home.js", sub {
         my ($client, $params) = @_;
-        return Slim::Web::HTTP::filltemplatefile(
-            "plugins/DefaultLogoHome/js-main-logo-home.js",
-            $params
-        );
+        return Slim::Web::HTTP::filltemplatefile("js-main-logo-home.js", $params);
     });
 
     Slim::Web::Pages::JS->addJSFunction("js-main", "js-main-logo-home.js");
