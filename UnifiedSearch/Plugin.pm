@@ -9,7 +9,7 @@ use Slim::Utils::Strings qw(cstring);
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::PluginManager;
 
-our $VERSION = '0.1.0';
+our $VERSION = '0.1.2';
 
 sub initPlugin {
     my $class = shift;
