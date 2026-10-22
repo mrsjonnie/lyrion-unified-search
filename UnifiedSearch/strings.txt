@@ -1,14 +1,19 @@
 PLUGIN_UNIFIEDSEARCH
-	Unified Search
+	EN	Unified Search
+	NL	Unified Search
 
 PLUGIN_UNIFIEDSEARCH_DESC
-	Search your local LMS library, YouTube and SpotOn from one place.
+	EN	Search your local LMS library and SpotOn Spotify from one place.
+	NL	Zoek op één plek in je lokale LMS-bibliotheek en Spotify via SpotOn.
 
 PLUGIN_UNIFIEDSEARCH_LOCAL
-	Local library (LMS web search)
+	EN	Local library (LMS web search)
+	NL	Lokale bibliotheek (LMS-webzoekfunctie)
 
 PLUGIN_UNIFIEDSEARCH_YOUTUBE
-	YouTube
+	EN	YouTube
+	NL	YouTube
 
 PLUGIN_UNIFIEDSEARCH_SPOTON
-	SpotOn (Spotify)
+	EN	SpotOn (Spotify)
+	NL	SpotOn (Spotify)

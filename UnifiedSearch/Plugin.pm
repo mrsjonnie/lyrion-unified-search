@@ -8,7 +8,7 @@ use URI::Escape qw(uri_escape_utf8);
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
 
-our $VERSION = '0.1.6';
+our $VERSION = '0.1.7';
 
 my $log = Slim::Utils::Log->addLogCategory({
     category     => 'plugin.unifiedsearch',
@@ -19,14 +19,26 @@ my $log = Slim::Utils::Log->addLogCategory({
 sub initPlugin {
     my $class = shift;
 
-    Slim::Menu::GlobalSearch->registerInfoProvider(
-        unifiedsearch => (
-            after => 'middle',
-            func  => \&searchInfoMenu,
-        )
-    );
+    # Keep these messages at WARN temporarily so they are visible with the
+    # default LMS logging level. They confirm whether LMS loads this module.
+    $log->warn("UnifiedSearch v$VERSION initPlugin called");
 
-    $log->info('Registered Global Search provider');
+    my $registered = eval {
+        Slim::Menu::GlobalSearch->registerInfoProvider(
+            unifiedsearch => (
+                after => 'middle',
+                func  => \&searchInfoMenu,
+            )
+        );
+        1;
+    };
+
+    if (!$registered) {
+        $log->error('UnifiedSearch could not register Global Search provider: ' . ($@ || 'unknown error'));
+        return;
+    }
+
+    $log->warn('UnifiedSearch registered Global Search provider');
 }
 
 sub getDisplayName {
@@ -35,6 +47,9 @@ sub getDisplayName {
 
 sub searchInfoMenu {
     my ($client, $tags) = @_;
+
+    $log->warn('UnifiedSearch searchInfoMenu called');
+
     my $query = $tags->{search} // '';
     return unless length $query;
 
@@ -48,8 +63,8 @@ sub searchInfoMenu {
         cachetime => 0,
     };
 
-    # Resolve SpotOn directly rather than silently skipping it based on
-    # PluginManager state. Log the reason if its callback is unavailable.
+    # SpotOn is optional. Keep the local-library result even if SpotOn
+    # cannot be loaded or its search callback is unavailable.
     my $loaded = eval { require Plugins::SpotOn::Plugin; 1 };
     if (!$loaded) {
         $log->warn('SpotOn search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
@@ -67,7 +82,7 @@ sub searchInfoMenu {
         $log->warn('SpotOn search unavailable: _searchFromHistoryFeed callback not found');
     }
 
-    $log->debug('Global Search query handled; returning ' . scalar(@items) . ' item(s)');
+    $log->warn('UnifiedSearch returning ' . scalar(@items) . ' search item(s)');
     return @items ? \@items : undef;
 }
 
