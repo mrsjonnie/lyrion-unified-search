@@ -31,7 +31,7 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p dist
           test -f UnifiedSearch/Plugin.pm
-          (cd UnifiedSearch && zip -r "../dist/UnifiedSearch-$VERSION.zip" .)
+          zip -r "dist/UnifiedSearch-$VERSION.zip" UnifiedSearch
           SHA1="$(sha1sum "dist/UnifiedSearch-$VERSION.zip" | cut -d' ' -f1)"
           echo "sha1=$SHA1" >> "$GITHUB_OUTPUT"
           echo "zip=dist/UnifiedSearch-$VERSION.zip" >> "$GITHUB_OUTPUT"
@@ -41,7 +41,11 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           SHA1="${{ steps.package.outputs.sha1 }}"
-          sed             -e "s/version=\"0.1.0\"/version=\"$VERSION\"/"             -e "s|releases/download/v0.1.0/UnifiedSearch-0.1.0.zip|releases/download/v$VERSION/UnifiedSearch-$VERSION.zip|"             -e "s/GENERATED_BY_RELEASE_WORKFLOW/$SHA1/"             repo.xml.in > repo.xml
+          sed \
+            -e "s/version=\"0.1.0\"/version=\"$VERSION\"/" \
+            -e "s|releases/download/v0.1.0/UnifiedSearch-0.1.0.zip|releases/download/v$VERSION/UnifiedSearch-$VERSION.zip|" \
+            -e "s/GENERATED_BY_RELEASE_WORKFLOW/$SHA1/" \
+            repo.xml.in > repo.xml
 
       - name: Commit repository metadata to main
         shell: bash
@@ -51,11 +55,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
-          git checkout main
           cp repo.xml.in /tmp/repo.xml.in
+          git checkout main
           VERSION="${{ steps.version.outputs.version }}"
           SHA1="${{ steps.package.outputs.sha1 }}"
-          sed             -e "s/version=\"0.1.0\"/version=\"$VERSION\"/"             -e "s|releases/download/v0.1.0/UnifiedSearch-0.1.0.zip|releases/download/v$VERSION/UnifiedSearch-$VERSION.zip|"             -e "s/GENERATED_BY_RELEASE_WORKFLOW/$SHA1/"             /tmp/repo.xml.in > repo.xml
+          sed \
+            -e "s/version=\"0.1.0\"/version=\"$VERSION\"/" \
+            -e "s|releases/download/v0.1.0/UnifiedSearch-0.1.0.zip|releases/download/v$VERSION/UnifiedSearch-$VERSION.zip|" \
+            -e "s/GENERATED_BY_RELEASE_WORKFLOW/$SHA1/" \
+            /tmp/repo.xml.in > repo.xml
           git add repo.xml
           git commit -m "Publish LMS repository metadata for v$VERSION" || true
           git push origin main
