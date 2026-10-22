@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Local library and SpotOn Spotify search alongside native LMS search providers</desc>
-            <desc lang="NL">Zoeken in de lokale bibliotheek en Spotify via SpotOn naast de bestaande LMS-zoekproviders</desc>
+            <desc lang="EN">One search entry for the local LMS library, YouTube and Spotify via SpotOn</desc>
+            <desc lang="NL">Eén zoekingang voor de lokale LMS-bibliotheek, YouTube en Spotify via SpotOn</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
