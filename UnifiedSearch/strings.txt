@@ -3,16 +3,16 @@ PLUGIN_UNIFIEDSEARCH
 	NL	Unified Search
 
 PLUGIN_UNIFIEDSEARCH_DESC
-	EN	Type to search available music, radio, and podcast sources and see up to three matches per source live.
-	NL	Typ om beschikbare muziek-, radio- en podcastbronnen te doorzoeken en direct maximaal drie resultaten per bron te zien.
+	EN	Type to search available music, BBC Sounds, radio, and podcast sources and see up to three matches per source live.
+	NL	Typ om beschikbare muziek-, BBC Sounds-, radio- en podcastbronnen te doorzoeken en direct maximaal drie resultaten per bron te zien.
 
 PLUGIN_UNIFIEDSEARCH_PLACEHOLDER
-	EN	Search music, radio, or podcasts...
-	NL	Zoek muziek, radio of podcasts...
+	EN	Search music, BBC Sounds, radio, or podcasts...
+	NL	Zoek muziek, BBC Sounds, radio of podcasts...
 
 PLUGIN_UNIFIEDSEARCH_TYPE_TO_SEARCH
-	EN	Type to search all available sources.
-	NL	Typ om alle beschikbare bronnen te doorzoeken.
+	EN	Type to search all available sources, including BBC Sounds when installed.
+	NL	Typ om alle beschikbare bronnen te doorzoeken, inclusief BBC Sounds indien geïnstalleerd.
 
 PLUGIN_UNIFIEDSEARCH_SEARCHING
 	EN	Searching...
@@ -49,6 +49,10 @@ PLUGIN_UNIFIEDSEARCH_DEEZER
 PLUGIN_UNIFIEDSEARCH_QOBUZ
 	EN	Qobuz
 	NL	Qobuz
+
+PLUGIN_UNIFIEDSEARCH_BBCSOUNDS
+	EN	BBC Sounds
+	NL	BBC Sounds
 
 PLUGIN_UNIFIEDSEARCH_RADIONET
 	EN	Radio.net stations

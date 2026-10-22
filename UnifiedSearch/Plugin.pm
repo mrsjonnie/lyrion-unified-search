@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.9';
+our $VERSION = '0.3.10';
 
 my $enabled = 0;
 
@@ -101,7 +101,7 @@ sub applicationSearchFeed {
         my ($sources) = @_;
         my @items;
 
-        for my $source (qw(local youtube spotty spoton deezer qobuz radionet podcast)) {
+        for my $source (qw(local youtube spotty spoton deezer qobuz bbcsounds radionet podcast)) {
             my $result = $sources->{$source};
             next unless $result;
             for my $hit (@{ $result->{items} || [] }) {
@@ -226,6 +226,15 @@ sub _searchTopArtists {
         elsif (!$loaded) {
             $log->warn('Qobuz live search unavailable: ' . ($@ || 'could not load plugin'));
         }
+    }
+
+    if (_bbcSoundsAvailable()) {
+        push @searches, {
+            key         => 'bbcsounds',
+            name        => string('PLUGIN_UNIFIEDSEARCH_BBCSOUNDS'),
+            handler     => \&bbcSoundsSearchFeed,
+            passthrough => { query => $query },
+        };
     }
 
     if (Slim::Utils::PluginManager->isEnabled('Slim::Plugin::Podcast::Plugin')) {
@@ -426,6 +435,17 @@ sub searchInfoMenu {
         }
     }
 
+    if (_bbcSoundsAvailable()) {
+        push @items, {
+            name        => string('PLUGIN_UNIFIEDSEARCH_BBCSOUNDS'),
+            icon        => 'html/images/search.png',
+            type        => 'link',
+            url         => \&bbcSoundsSearchFeed,
+            passthrough => [{ query => $query }],
+            cachetime   => 0,
+        };
+    }
+
     if (Slim::Utils::PluginManager->isEnabled('Slim::Plugin::Podcast::Plugin')) {
         my $loaded = eval { require Slim::Plugin::Podcast::Plugin; 1 };
         if (!$loaded) {
@@ -546,6 +566,51 @@ sub qobuzSearchFeed {
         _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_QOBUZ'), 3),
         \%search_args,
         { q => $query, type => 'artists' },
+    );
+}
+
+sub _bbcSoundsAvailable {
+    return 0 unless Slim::Utils::PluginManager->isEnabled('Plugins::BBCSounds::Plugin');
+
+    my $loaded = eval { require Plugins::BBCSounds::BBCSoundsFeeder; 1 };
+    unless ($loaded) {
+        $log->warn('BBC Sounds search unavailable: ' . ($@ || 'could not load plugin'));
+        return 0;
+    }
+
+    unless (Plugins::BBCSounds::BBCSoundsFeeder->can('getPage')) {
+        $log->warn('BBC Sounds search unavailable: getPage callback not found');
+        return 0;
+    }
+
+    return 1;
+}
+
+sub bbcSoundsSearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    my %search_args = $args ? %{$args} : ();
+    $search_args{search} = $query;
+
+    my $result_callback = _resultsCallback(
+        $callback,
+        string('PLUGIN_UNIFIEDSEARCH_BBCSOUNDS'),
+        3,
+    );
+    my $feed_callback = sub {
+        my ($feed) = @_;
+        unless (ref $feed eq 'HASH') {
+            $log->warn('BBC Sounds search returned an invalid feed');
+            return $callback->({ items => [], search_error => 1 });
+        }
+        $result_callback->($feed);
+    };
+
+    Plugins::BBCSounds::BBCSoundsFeeder::getPage(
+        $client,
+        $feed_callback,
+        \%search_args,
+        { type => 'searchall', query => $query },
     );
 }
 
