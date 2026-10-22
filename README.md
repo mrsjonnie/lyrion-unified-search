@@ -1,21 +1,43 @@
 # Lyrion Unified Search
 
-An add-on for Lyrion Music Server (LMS) to bring searches from multiple providers into one place.
+A standalone add-on for Lyrion Music Server (LMS) that adds one grouped entry to LMS Global Search for the local library, YouTube, and SpotOn.
 
-## Goals
+## Current implementation
 
-- Provide a unified search entry point for the LMS music library and supported search providers.
-- Keep the add-on separate from Material Skin, YouTube, SpotOn, and other existing plugins.
-- Make installation and removal through LMS repository/plugin management straightforward.
-- Avoid changing existing LMS or plugin configuration outside this add-on's own files.
+- Registers a **Unified Search** provider using LMS's `Slim::Menu::GlobalSearch` extension API.
+- Adds a local-library destination that opens the LMS web search page on the configured home-server address currently used by the author: `http://192.168.178.99:9001`.
+- Reuses YouTube's existing search handler when the YouTube plugin is installed and enabled.
+- Reuses SpotOn's existing search feed when SpotOn is installed and enabled.
+- Does not edit Material Skin, YouTube, SpotOn, LMS core, or the Default skin.
 
-## Status
+The initial implementation groups the three source actions under one search-provider entry. It is not yet a single flat, cross-provider result list; each source continues to render results using its own existing LMS feed. The local-library destination is specific to the author's current LMS address and should be made configurable before a general public release.
 
-Initial project scaffold. Provider integrations and the LMS plugin/repository packaging still need implementation and testing against the target LMS version.
+## Compatibility and requirements
 
-## Development principles
+- LMS 8.0 or newer.
+- YouTube and/or SpotOn are optional; their entries are omitted when the respective plugin is not enabled.
+- The local-library link currently targets `192.168.178.99:9001`.
 
-- Inspect the actual LMS and provider plugin interfaces before implementing integrations.
-- Fail gracefully when a provider is missing or unavailable.
-- Keep configuration scoped to this plugin.
-- Document installation, configuration, troubleshooting, and uninstall behavior.
+## Installation
+
+A tagged release is packaged by GitHub Actions as `UnifiedSearch-VERSION.zip`. After the first release is published, add this repository URL in **LMS Settings → Plugins → Additional Repositories**:
+
+```
+https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
+```
+
+Then apply the changes, install **Lyrion Unified Search**, and restart LMS if requested.
+
+To publish a release, push a version tag such as `v0.1.0`. The release workflow creates the plugin ZIP, calculates its SHA-1, publishes a GitHub release, and updates `repo.xml` on `main`.
+
+## Uninstall
+
+Disable and uninstall **Lyrion Unified Search** through LMS's plugin settings. The plugin only registers its own Global Search provider; it does not write to the configuration of other plugins.
+
+## Development notes
+
+- Plugin source: `UnifiedSearch/Plugin.pm`
+- LMS repository template: `repo.xml.in`
+- Release workflow: `.github/workflows/release.yml`
+
+The first release still needs an end-to-end test on the author's LMS instance, especially the local web-search link and the installed versions of YouTube and SpotOn.
