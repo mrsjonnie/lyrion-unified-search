@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Unified Search entry in Material Applications and Default Browse menus, with local library and SpotOn results</desc>
-            <desc lang="NL">Unified Search in Toepassingen van Material en in Bladeren van Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
+            <desc lang="EN">LMS Unified Search application for Material Apps and Default Browse, including local library and SpotOn results</desc>
+            <desc lang="NL">LMS Unified Search-app voor Material Apps en Bladeren in Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -41,6 +41,22 @@
             <title lang="NL">Default-logo → LMS-startpagina</title>
             <desc lang="EN">Makes the Lyrion logo in the Default skin open the LMS home page</desc>
             <desc lang="NL">Laat het Lyrion-logo in de Default-skin de LMS-startpagina openen</desc>
+        </plugin>
+        <plugin
+            name="YouTubeCast"
+            version="YOUTUBECAST_VERSION"
+            target="unix|mac|windows"
+            minTarget="8.0"
+            maxTarget="*"
+            sha="GENERATED_YOUTUBECAST_SHA1"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/vUNIFIED_VERSION/YouTubeCast-YOUTUBECAST_VERSION.zip"
+            category="interface"
+            creator="mrsjonnie"
+        >
+            <title lang="EN">YouTube Cast for Chromecast</title>
+            <title lang="NL">YouTube Cast voor Chromecast</title>
+            <desc lang="EN">Starts the native YouTube app on a configured Google Cast device when an LMS YouTube track starts</desc>
+            <desc lang="NL">Start de native YouTube-app op een ingestelde Google Cast-tv wanneer een LMS-YouTube-track begint</desc>
         </plugin>
     </plugins>
 </extensions>

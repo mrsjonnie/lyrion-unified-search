@@ -1,0 +1,11 @@
+[% PROCESS settings/header.html %]
+
+[% WRAPPER setting title="PLUGIN_YOUTUBECAST_ENABLED" desc="PLUGIN_YOUTUBECAST_ENABLED_DESC" %]
+    <input name="pref_enabled" type="checkbox" [% IF prefs.pref_enabled %]checked[% END %]>
+[% END %]
+
+[% WRAPPER setting title="PLUGIN_YOUTUBECAST_HOST" desc="PLUGIN_YOUTUBECAST_HOST_DESC" %]
+    <input type="text" class="stdedit" name="pref_target_host" id="pref_target_host" value="[% prefs.pref_target_host | html %]" size="40">
+[% END %]
+
+[% PROCESS settings/footer.html %]

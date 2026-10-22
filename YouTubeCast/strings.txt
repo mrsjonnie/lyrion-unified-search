@@ -1,0 +1,19 @@
+PLUGIN_YOUTUBECAST
+	EN	YouTube Cast for Chromecast
+	NL	YouTube Cast voor Chromecast
+
+PLUGIN_YOUTUBECAST_ENABLED
+	EN	Enable automatic YouTube casting
+	NL	Automatisch YouTube casten inschakelen
+
+PLUGIN_YOUTUBECAST_ENABLED_DESC
+	EN	When enabled, starting an LMS YouTube track also starts that video in the native YouTube app on the configured Chromecast.
+	NL	Als dit is ingeschakeld, start een LMS-YouTube-track ook dezelfde video in de YouTube-app op de ingestelde Chromecast.
+
+PLUGIN_YOUTUBECAST_HOST
+	EN	Chromecast host or IP address
+	NL	Hostnaam of IP-adres van de Chromecast
+
+PLUGIN_YOUTUBECAST_HOST_DESC
+	EN	Enter the Chromecast's IP address or local hostname. Reserve its address in your router so it does not change.
+	NL	Vul het IP-adres of de lokale hostnaam van de Chromecast in. Reserveer dit adres in je router zodat het niet verandert.
