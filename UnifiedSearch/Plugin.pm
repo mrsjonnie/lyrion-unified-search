@@ -4,14 +4,12 @@ use strict;
 use warnings;
 use base qw(Slim::Plugin::OPMLBased);
 
-use URI::Escape qw(uri_escape_utf8);
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
-use Slim::Utils::Network;
 use Slim::Utils::PluginManager;
 use Slim::Utils::Strings qw(string);
 
-our $VERSION = '0.3.1';
+our $VERSION = '0.3.3';
 
 my $enabled = 0;
 
@@ -72,6 +70,7 @@ sub applicationFeed {
     $callback->({
         items => $enabled ? [{
             name => string('PLUGIN_UNIFIEDSEARCH'),
+            icon => 'html/images/search.png',
             type => 'search',
             url  => \&applicationSearchFeed,
         }] : [],
@@ -99,38 +98,157 @@ sub searchInfoMenu {
     return unless length $query;
 
     my @items;
-    my $escaped = uri_escape_utf8($query);
 
     push @items, {
-        name      => string('PLUGIN_UNIFIEDSEARCH_LOCAL'),
-        type      => 'link',
-        url       => Slim::Utils::Network::serverURL() . '/search.html?ajaxSearch=1&q=' . $escaped,
-        cachetime => 0,
+        name        => string('PLUGIN_UNIFIEDSEARCH_LOCAL'),
+        icon        => 'html/images/search.png',
+        type        => 'link',
+        url         => \&localSearchFeed,
+        passthrough => [{ query => $query }],
+        cachetime   => 0,
     };
 
-    # SpotOn is optional. Keep the local-library result even if SpotOn
-    # cannot be loaded or its search callback is unavailable.
-    if (Slim::Utils::PluginManager->isEnabled('Plugins::SpotOn::Plugin')) {
-        my $loaded = eval { require Plugins::SpotOn::Plugin; 1 };
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::YouTube::Plugin')) {
+        my $loaded = eval { require Plugins::YouTube::Plugin; 1 };
         if (!$loaded) {
-            $log->warn('SpotOn search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
+            $log->warn('YouTube search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
         }
-        elsif (Plugins::SpotOn::Plugin->can('_searchFromHistoryFeed')) {
+        elsif (Plugins::YouTube::Plugin->can('searchHandler')) {
             push @items, {
-                name        => string('PLUGIN_UNIFIEDSEARCH_SPOTON'),
+                name        => string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'),
+                icon        => 'html/images/search.png',
                 type        => 'link',
-                url         => \&Plugins::SpotOn::Plugin::_searchFromHistoryFeed,
+                url         => \&youtubeSearchFeed,
                 passthrough => [{ query => $query }],
                 cachetime   => 0,
             };
         }
         else {
-            $log->warn('SpotOn search unavailable: _searchFromHistoryFeed callback not found');
+            $log->warn('YouTube search unavailable: searchHandler callback not found');
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::Spotty::Plugin')) {
+        my $loaded = eval { require Plugins::Spotty::OPML; 1 };
+        if (!$loaded) {
+            $log->warn('Spotty search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
+        }
+        elsif (Plugins::Spotty::OPML->can('search')) {
+            push @items, {
+                name        => string('PLUGIN_UNIFIEDSEARCH_SPOTTY'),
+                icon        => 'html/images/search.png',
+                type        => 'link',
+                url         => \&spottySearchFeed,
+                passthrough => [{ query => $query }],
+                cachetime   => 0,
+            };
+        }
+        else {
+            $log->warn('Spotty artist search unavailable: search callback not found');
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::SpotOn::Plugin')) {
+        my $loaded = eval { require Plugins::SpotOn::Plugin; 1 };
+        if (!$loaded) {
+            $log->warn('SpotOn search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
+        }
+        elsif (Plugins::SpotOn::Plugin->can('_searchTypeFeed')) {
+            push @items, {
+                name        => string('PLUGIN_UNIFIEDSEARCH_SPOTON'),
+                icon        => 'html/images/search.png',
+                type        => 'link',
+                url         => \&spotonSearchFeed,
+                passthrough => [{ query => $query }],
+                cachetime   => 0,
+            };
+        }
+        else {
+            $log->warn('SpotOn artist search unavailable: _searchTypeFeed callback not found');
         }
     }
 
     $log->debug('UnifiedSearch returning ' . scalar(@items) . ' search item(s)');
     return @items ? \@items : undef;
+}
+
+sub localSearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    require Slim::Menu::BrowseLibrary;
+
+    my %search_args = $args ? %{$args} : ();
+    $search_args{search} = $query;
+    $search_args{quantity} = 3;
+
+    Slim::Menu::BrowseLibrary::_artists(
+        $client,
+        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_LOCAL')),
+        \%search_args,
+        {},
+    );
+}
+
+sub youtubeSearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    my %search_args = $args ? %{$args} : ();
+    $search_args{search} = $query;
+    $search_args{quantity} = 3;
+
+    Plugins::YouTube::Plugin::searchHandler(
+        $client,
+        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE')),
+        \%search_args,
+        { type => 'channel' },
+    );
+}
+
+sub spottySearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    my %search_args = $args ? %{$args} : ();
+    $search_args{search} = $query;
+    $search_args{quantity} = 3;
+
+    Plugins::Spotty::OPML::search(
+        $client,
+        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTTY')),
+        \%search_args,
+        { type => 'artist' },
+    );
+}
+
+sub spotonSearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    my %search_args = $args ? %{$args} : ();
+    $search_args{quantity} = 3;
+
+    Plugins::SpotOn::Plugin::_searchTypeFeed(
+        $client,
+        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTON')),
+        \%search_args,
+        { query => $query, type => 'artist' },
+    );
+}
+
+sub _artistResultsCallback {
+    my ($callback, $name) = @_;
+
+    return sub {
+        my ($feed) = @_;
+        $feed = {} unless ref $feed eq 'HASH';
+        my @items = ref $feed->{items} eq 'ARRAY' ? @{ $feed->{items} } : ();
+        splice @items, 3 if @items > 3;
+
+        $callback->({
+            %$feed,
+            name  => $name,
+            icon  => 'html/images/search.png',
+            items => \@items,
+        });
+    };
 }
 
 sub shutdownPlugin {

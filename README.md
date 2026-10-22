@@ -6,8 +6,8 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 - Registers as a real LMS application so Material Skin lists **Unified Search** under **Apps/Applications**, and keeps the Browse menu entry in the LMS Default skin.
 - Opens a search prompt in Material Skin and one query form in the Default skin.
-- Adds **Local library** and, when SpotOn is enabled, **Spotify (SpotOn)** as selectable results.
-- Leaves YouTube's native Global Search provider intact, so it appears alongside the new entries when the YouTube plugin is enabled.
+- Shows up to **three artist matches** from the local library, **YouTube**, **Spotify (Spotty)**, and **SpotOn** when those sources are enabled.
+- Uses LMS's built-in artist browse feed and the YouTube, Spotty, and SpotOn plugins' native search callbacks.
 - Registers with LMS Global Search; Material discovers the application through LMS's standard `OPMLBased` app registry. No Material Skin files are modified.
 - Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.
 
@@ -21,10 +21,10 @@ video on the configured TV.
 ## Compatibility and requirements
 
 - LMS 8.0 or newer.
-- SpotOn is optional; the Spotify entry appears only when Plugins::SpotOn::Plugin is enabled and its existing search callback is available.
+- YouTube, Spotty, and SpotOn are optional; artist matches appear only when the corresponding plugin is enabled and its search callback is available.
 - YouTube Cast requires a Chromecast with the native YouTube app, the LMS YouTube plugin, and a configured host reachable from LMS on TCP port 8009.
-- The local-library URL is built from LMS's configured server address and HTTP port; it does not depend on a hard-coded installation address.
-- YouTube's own provider is not duplicated by this plugin.
+- Local search uses LMS's native browse feed, including its search categories and virtual-library handling; it does not route OPML clients to the HTML search page.
+- The app and its result entries use LMS's built-in search icon.
 
 ## Install
 

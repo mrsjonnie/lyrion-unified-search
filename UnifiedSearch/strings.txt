@@ -3,16 +3,20 @@ PLUGIN_UNIFIEDSEARCH
 	NL	Unified Search
 
 PLUGIN_UNIFIEDSEARCH_DESC
-	EN	Search your local LMS library and SpotOn Spotify from one place.
-	NL	Zoek op één plek in je lokale LMS-bibliotheek en Spotify via SpotOn.
+	EN	Show three artist matches per source from your local library, YouTube, Spotty, and SpotOn.
+	NL	Toon drie artiesten per bron uit je lokale bibliotheek, YouTube, Spotty en SpotOn.
 
 PLUGIN_UNIFIEDSEARCH_LOCAL
-	EN	Local library (LMS web search)
-	NL	Lokale bibliotheek (LMS-webzoekfunctie)
+	EN	Local library
+	NL	Lokale bibliotheek
 
 PLUGIN_UNIFIEDSEARCH_YOUTUBE
 	EN	YouTube
 	NL	YouTube
+
+PLUGIN_UNIFIEDSEARCH_SPOTTY
+	EN	Spotify (Spotty)
+	NL	Spotify (Spotty)
 
 PLUGIN_UNIFIEDSEARCH_SPOTON
 	EN	SpotOn (Spotify)

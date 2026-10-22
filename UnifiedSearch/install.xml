@@ -3,9 +3,10 @@
     <name>Lyrion Unified Search</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Adds Unified Search to LMS applications with local-library and SpotOn results.</description>
+    <description>Shows three artist matches from the local library, YouTube, Spotty, and SpotOn.</description>
     <category>musicservices</category>
     <id>2c03f0a2-8b53-4f4d-a171-5d2b5c1b91a7</id>
+    <icon>html/images/search.png</icon>
     <module>Plugins::UnifiedSearch::Plugin</module>
     <targetApplication>
         <id>SqueezeCenter</id>
@@ -13,5 +14,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.3.1</version>
+    <version>0.3.3</version>
 </extension>
