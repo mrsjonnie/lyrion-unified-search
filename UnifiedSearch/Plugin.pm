@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.12';
+our $VERSION = '0.3.13';
 
 my $enabled = 0;
 
@@ -110,9 +110,7 @@ sub applicationSearchFeed {
                 next unless length $name;
 
                 my %item = %$hit;
-                $item{name} = $source eq 'bbcsounds'
-                    ? 'BBC: ' . $name
-                    : $result->{name} . ': ' . $name;
+                $item{name} = $result->{name} . ': ' . $name;
                 push @items, \%item;
             }
         }
@@ -138,11 +136,7 @@ sub searchResultsHandler {
             $formatted{$source} = {
                 name  => $sources->{$source}{name},
                 error => $sources->{$source}{error},
-                items => [
-                    map {
-                        _itemName($_, $source eq 'bbcsounds' ? 'BBC: ' : '')
-                    } @{ $sources->{$source}{items} || [] }
-                ],
+                items => [ map { _itemName($_) } @{ $sources->{$source}{items} || [] } ],
             };
         }
         my $json = encode_json({ sources => \%formatted });
@@ -315,10 +309,9 @@ sub _searchTopArtists {
 }
 
 sub _itemName {
-    my ($item, $prefix) = @_;
+    my ($item) = @_;
     return '' unless ref $item eq 'HASH';
-    my $name = $item->{name} || $item->{artist} || $item->{album} || $item->{title} || $item->{channel} || '';
-    return length($name) ? ($prefix || '') . $name : '';
+    return $item->{name} || $item->{artist} || $item->{album} || $item->{title} || $item->{channel} || '';
 }
 
 sub getDisplayName {
@@ -514,7 +507,7 @@ sub youtubeSearchFeed {
         $client,
         _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'), 3),
         \%search_args,
-        { type => 'video' },
+        { type => 'channel' },
     );
 }
 
@@ -611,13 +604,6 @@ sub bbcSoundsSearchFeed {
             return $callback->({ items => [], search_error => 1 });
         }
 
-        my $feed_items = ref $feed->{items} eq 'ARRAY' ? $feed->{items} : [];
-        my @items = map {
-            ref $_ eq 'HASH'
-                ? { %$_, name => _itemName($_, 'BBC: ') }
-                : $_
-        } @$feed_items;
-        $feed = { %$feed, items => \@items };
         $result_callback->($feed);
     };
 
