@@ -31,7 +31,7 @@ jobs:
           if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
             VERSION="${GITHUB_REF_NAME#v}"
           else
-            VERSION="0.1.2"
+            VERSION="0.1.4"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
@@ -44,16 +44,16 @@ jobs:
           test -f UnifiedSearch/install.xml
           test -f DefaultLogoHome/Plugin.pm
           test -f DefaultLogoHome/install.xml
-          zip -r dist/UnifiedSearch-0.1.2.zip UnifiedSearch
+          zip -r dist/UnifiedSearch-0.1.3.zip UnifiedSearch
           zip -r dist/DefaultLogoHome-0.1.1.zip DefaultLogoHome
-          echo "unified_sha=$(sha1sum dist/UnifiedSearch-0.1.2.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "unified_sha=$(sha1sum dist/UnifiedSearch-0.1.3.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
           echo "logo_sha=$(sha1sum dist/DefaultLogoHome-0.1.1.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Generate repository XML
         shell: bash
         run: |
           sed \
-            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.2\"/" \
+            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.3\"/" \
             -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
             -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
             repo.xml.in > repo.xml
@@ -67,7 +67,7 @@ jobs:
           git fetch origin main
           git checkout main
           sed \
-            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.2\"/" \
+            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.3\"/" \
             -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
             -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
             repo.xml.in > repo.xml
@@ -79,9 +79,9 @@ jobs:
         if: github.ref_type == 'branch'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.3
-          name: Lyrion LMS add-ons v0.1.3
+          tag_name: v0.1.4
+          name: Lyrion LMS add-ons v0.1.4
           generate_release_notes: true
           files: |
-            dist/UnifiedSearch-0.1.2.zip
+            dist/UnifiedSearch-0.1.3.zip
             dist/DefaultLogoHome-0.1.1.zip
