@@ -165,7 +165,8 @@ sub _removeMaterialSkinSearchHook {
     return unless $count;
 
     my $tmp = "$path.unifiedsearch.tmp";
-    if (!open(my $out, '>', $tmp)) {
+    my $out;
+    if (!open($out, '>', $tmp)) {
         $log->warn("Could not write temporary Material Skin hook cleanup $tmp: $!");
         return;
     }
