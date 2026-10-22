@@ -6,6 +6,7 @@ use base qw(Slim::Plugin::Base);
 
 use File::Basename qw(dirname);
 use File::Spec::Functions qw(catfile);
+use Scalar::Util qw(blessed);
 use Slim::Control::Request;
 use Slim::Utils::Log;
 use Slim::Utils::OSDetect;
@@ -39,14 +40,16 @@ sub initPlugin {
     }
 
     Slim::Control::Request::subscribe(\&_onPlaylistControl, [['playlistcontrol']]);
-    Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['play', 'load', 'playtracks']]);
+    Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['load', 'playtracks']]);
     Slim::Control::Request::subscribe(\&_onPlaylistJump, [['playlist'], ['jump']]);
+    Slim::Control::Request::subscribe(\&_onPlayerPlay, [['play']]);
 }
 
 sub shutdownPlugin {
     Slim::Control::Request::unsubscribe(\&_onPlaylistControl);
     Slim::Control::Request::unsubscribe(\&_onPlaylistPlay);
     Slim::Control::Request::unsubscribe(\&_onPlaylistJump);
+    Slim::Control::Request::unsubscribe(\&_onPlayerPlay);
     for my $worker (@workers) {
         $worker->die if $worker && $worker->alive;
     }
@@ -67,8 +70,21 @@ sub _onPlaylistControl {
 
 sub _onPlaylistPlay {
     my ($request) = @_;
-    my $url = _requestTrackUrl($request, '_item', 'listRef', 'url');
-    _startCastForUrl($request->client, $url);
+    my $client = $request->client or return;
+    my $url = _requestTrackUrl($request, '_item', '_listref', 'url');
+    if (!$url) {
+        my $track = Slim::Player::Playlist::track($client);
+        $url = blessed($track) && $track->can('url') ? $track->url : '';
+    }
+    _startCastForUrl($client, $url);
+}
+
+sub _onPlayerPlay {
+    my ($request) = @_;
+    my $client = $request->client or return;
+    my $track = Slim::Player::Playlist::track($client) or return;
+    my $url = blessed($track) && $track->can('url') ? $track->url : '';
+    _startCastForUrl($client, $url);
 }
 
 sub _onPlaylistJump {

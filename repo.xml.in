@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Live artist search showing three matches from available sources, including Deezer and Qobuz</desc>
-            <desc lang="NL">Live artiesten zoeken met drie resultaten uit beschikbare bronnen, inclusief Deezer en Qobuz</desc>
+            <desc lang="EN">Live search with up to three results per source from music, Radio.net stations, and podcasts</desc>
+            <desc lang="NL">Live zoeken met maximaal drie resultaten per bron uit muziek, Radio.net-zenders en podcasts</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
