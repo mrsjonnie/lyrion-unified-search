@@ -12,7 +12,7 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.1.0"
+            version="UNIFIED_VERSION"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
