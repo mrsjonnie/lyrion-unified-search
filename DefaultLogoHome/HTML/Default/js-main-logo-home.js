@@ -14,6 +14,6 @@ Ext.onReady(function () {
     }
 
     if (link && link.tagName && link.tagName.toLowerCase() === 'a') {
-        link.href = '/';
+        link.href = '[% webroot %]';
     }
 });
