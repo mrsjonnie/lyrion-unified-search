@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    LMS custom repository descriptor for Lyrion Unified Search.
+
+    Add the published raw URL in LMS Settings > Plugins > Additional Repositories:
+    https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
+
+    The release workflow fills in the version, release URL and SHA-1 digest.
+-->
 <extensions>
     <details>
         <title lang="EN">Lyrion Unified Search Repository</title>
@@ -7,12 +15,12 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.1.0"
+            version="0.1.1"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="2137a127c17ff83215c711d347a7cd7853e2f988"
-            url="https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/dist/UnifiedSearch-0.1.0.zip"
+            sha="fb6219fe0a3979763d7bd01a716eab0cccd3d915"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.1/UnifiedSearch-0.1.1.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
