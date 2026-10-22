@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    LMS custom repository descriptor for Lyrion Unified Search.
-
-    Add the published raw URL in LMS Settings > Plugins > Additional Repositories:
+    LMS custom repository descriptor.
+    Add this URL in LMS Settings > Plugins > Additional Repositories:
     https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
-
-    The release workflow fills in the version, release URL and SHA-1 digest.
 -->
 <extensions>
     <details>
-        <title lang="EN">Lyrion Unified Search Repository</title>
-        <title lang="NL">Lyrion Unified Search Repository</title>
+        <title lang="EN">Lyrion LMS Add-ons</title>
+        <title lang="NL">Lyrion LMS-add-ons</title>
     </details>
     <plugins>
         <plugin
@@ -19,8 +16,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="GENERATED_BY_RELEASE_WORKFLOW"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.0/UnifiedSearch-0.1.0.zip"
+            sha="GENERATED_UNIFIED_SHA1"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.2/UnifiedSearch-0.1.2.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
@@ -28,6 +25,22 @@
             <title lang="NL">Lyrion Unified Search</title>
             <desc lang="EN">Grouped search entry for the LMS library, YouTube and SpotOn</desc>
             <desc lang="NL">Gecombineerde zoekingang voor de LMS-bibliotheek, YouTube en SpotOn</desc>
+        </plugin>
+        <plugin
+            name="DefaultLogoHome"
+            version="0.1.0"
+            target="unix|mac|windows"
+            minTarget="8.0"
+            maxTarget="*"
+            sha="GENERATED_LOGO_SHA1"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.2/DefaultLogoHome-0.1.0.zip"
+            category="interface"
+            creator="mrsjonnie"
+        >
+            <title lang="EN">Default Logo → LMS Home</title>
+            <title lang="NL">Default-logo → LMS-startpagina</title>
+            <desc lang="EN">Makes the Lyrion logo in the Default skin open the LMS home page</desc>
+            <desc lang="NL">Laat het Lyrion-logo in de Default-skin de LMS-startpagina openen</desc>
         </plugin>
     </plugins>
 </extensions>
