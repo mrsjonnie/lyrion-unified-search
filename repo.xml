@@ -12,19 +12,19 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.3.1"
+            version="0.3.3"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="45bcc527aaf83fef22e874db9ed69516973b9841"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.1/UnifiedSearch-0.3.1.zip"
+            sha="eed4ad77f7676067269e6984a7ad770c5735e447"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.3/UnifiedSearch-0.3.3.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">LMS Unified Search application for Material Apps and Default Browse, including local library and SpotOn results</desc>
-            <desc lang="NL">LMS Unified Search-app voor Material Apps en Bladeren in Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
+            <desc lang="EN">Shows three artist matches per source from the local library, YouTube, Spotify, and SpotOn</desc>
+            <desc lang="NL">Toont drie artiesten per bron uit de lokale bibliotheek, YouTube, Spotify en SpotOn</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -32,8 +32,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="b79bc9a9cd7cc9bc3f81d7e29547022648ba9a60"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.1/DefaultLogoHome-0.1.5.zip"
+            sha="008abd0324ba1b6adc0af6a28e2cdb08e7da8bd8"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.3/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
         >
@@ -48,8 +48,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="2b0fddecfdd19c570d7fea3c17b13f4e20f931c3"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.1/YouTubeCast-0.1.0.zip"
+            sha="ca458b0b3f70acb4d0bddc621e73a814fc779641"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.3/YouTubeCast-0.1.0.zip"
             category="interface"
             creator="mrsjonnie"
         >
