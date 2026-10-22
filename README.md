@@ -7,7 +7,7 @@ A standalone add-on for Lyrion Music Server (LMS). It adds a **Unified Search** 
 1. Open **My Music / Browse Library → Unified Search**.
 2. Enter one search term.
 3. Choose the source to open its existing results:
-   - **Local library (LMS)** — opens LMS's own web search for that query.
+   - **Local library (LMS)** — opens LMS's native track search for that query.
    - **YouTube** — calls the installed YouTube plugin's existing search handler.
    - **Spotify (SpotOn)** — calls SpotOn's existing search-feed callback.
 
@@ -19,11 +19,11 @@ The source choice is one extra click after the query. The results themselves rem
 - YouTube and SpotOn are optional; their entries are shown only when their plugin and search callback are available.
 - Uses LMS's supported `Slim::Menu::BrowseLibrary->registerNode` extension point.
 - Does not modify Material Skin, the Default skin, LMS core, YouTube, SpotOn, or their configuration files.
-- The local-library URL is relative to the current LMS server, so it does not hard-code a home-network address.
+- The local-library result uses LMS's native Browse Library track-search callback; no hard-coded home-network URL is used.
 
 ## Install
 
-The currently published release is still the previous stable version. This branch is a development draft and is not published as an installable release yet.
+The currently published release is still the previous stable version. This branch is a development draft and is not published as an installable release yet. Do not install it until the query flow and all three providers have been tested on a real LMS instance.
 
 Add the repository in **LMS Settings → Plugins → Additional Repositories** after a release is published:
 
