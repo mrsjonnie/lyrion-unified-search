@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extensions>
+    <details>
+        <title lang="EN">Lyrion Unified Search Repository</title>
+        <title lang="NL">Lyrion Unified Search Repository</title>
+    </details>
+    <plugins>
+        <plugin
+            name="UnifiedSearch"
+            version="0.1.0"
+            target="unix|mac|windows"
+            minTarget="8.0"
+            maxTarget="*"
+            sha="2137a127c17ff83215c711d347a7cd7853e2f988"
+            url="https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/dist/UnifiedSearch-0.1.0.zip"
+            category="musicservices"
+            creator="mrsjonnie"
+        >
+            <title lang="EN">Lyrion Unified Search</title>
+            <title lang="NL">Lyrion Unified Search</title>
+            <desc lang="EN">Grouped search entry for the LMS library, YouTube and SpotOn</desc>
+            <desc lang="NL">Gecombineerde zoekingang voor de LMS-bibliotheek, YouTube en SpotOn</desc>
+        </plugin>
+    </plugins>
+</extensions>
