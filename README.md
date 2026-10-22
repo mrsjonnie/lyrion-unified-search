@@ -5,7 +5,7 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 ## What it does
 
 - Registers as a real LMS application so Material Skin lists **Unified Search** under **Apps/Applications**, and keeps the Browse menu entry in the LMS Default skin.
-- Opens a search prompt in Material Skin and a focused, live-search field in the Default skin.
+- Opens the app directly to a focused, live-search field, without an intermediate Unified Search item/button.
 - Shows up to **three matches per source** from the local library, **YouTube**, **Spotify (Spotty)**, **SpotOn**, **Deezer**, **Qobuz**, **Radio.net stations**, and **Podcasts** as the query is typed.
 - Opens the focused artist search field immediately in the Default skin and uses the enabled streaming plugins' native search callbacks.
 - Registers with LMS Global Search; Material discovers the application through LMS's standard `OPMLBased` app registry. No Material Skin files are modified.
@@ -15,7 +15,8 @@ The repository also includes **YouTube Cast for Chromecast**, a separate add-on
 that starts the native YouTube app on a configured Google Cast device whenever
 an LMS YouTube track receives a Play request. Casting uses the original track
 URL, starts the native YouTube app using its MDX/Lounge session, and does not
-wait for LMS to start or transcode the audio. Enable automatic casting and set
+wait for LMS to start or transcode the audio. The LMS Play request targets the
+currently selected playlist video. Enable automatic casting and set
 the Chromecast IP address or local hostname beside each LMS player in the
 add-on settings; the selected player determines the target.
 The LMS YouTube plugin streams audio to its selected LMS player; this add-on

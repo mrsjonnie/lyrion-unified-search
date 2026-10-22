@@ -22,6 +22,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 });
 my @workers;
 my $warnedMissingHost = 0;
+my %lastCast;
 
 sub initPlugin {
     my $class = shift;
@@ -54,6 +55,7 @@ sub shutdownPlugin {
         $worker->die if $worker && $worker->alive;
     }
     @workers = ();
+    %lastCast = ();
 }
 
 sub getDisplayName {
@@ -74,7 +76,7 @@ sub _onPlaylistPlay {
     my $url = _requestTrackUrl($request, '_item', '_listref', 'url');
     if (!$url) {
         my $track = Slim::Player::Playlist::track($client);
-        $url = blessed($track) && $track->can('url') ? $track->url : '';
+        $url = _trackUrl($track);
     }
     _startCastForUrl($client, $url);
 }
@@ -83,7 +85,7 @@ sub _onPlayerPlay {
     my ($request) = @_;
     my $client = $request->client or return;
     my $track = Slim::Player::Playlist::track($client) or return;
-    my $url = blessed($track) && $track->can('url') ? $track->url : '';
+    my $url = _trackUrl($track);
     _startCastForUrl($client, $url);
 }
 
@@ -95,7 +97,15 @@ sub _onPlaylistJump {
     return unless defined $index && $index =~ /\A\d+\z/;
 
     my $track = Slim::Player::Playlist::track($client, $index) or return;
-    _startCastForUrl($client, $track->url);
+    _startCastForUrl($client, _trackUrl($track));
+}
+
+sub _trackUrl {
+    my ($track) = @_;
+    return '' unless defined $track;
+    return $track->url || '' if blessed($track) && $track->can('url');
+    return $track unless ref $track;
+    return '';
 }
 
 sub _requestTrackUrl {
@@ -167,6 +177,15 @@ sub _startCastForUrl {
         return;
     }
 
+    my $clientId = $client && $client->id || 'unknown';
+    my $now = time;
+    if ($lastCast{$clientId}
+        && $lastCast{$clientId}{host} eq $host
+        && $lastCast{$clientId}{videoId} eq $videoId
+        && $now - $lastCast{$clientId}{time} < 5) {
+        return;
+    }
+
     my $pluginDir = dirname(__FILE__);
     my $workerOptions = { die_upon_destroy => 0 };
     my $logDir = Slim::Utils::OSDetect::dirsFor('log');
@@ -192,6 +211,7 @@ sub _startCastForUrl {
 
     @workers = grep { $_ && $_->alive } @workers;
     push @workers, $worker;
+    $lastCast{$clientId} = { host => $host, videoId => $videoId, time => $now };
     my $playerName = $client && ($client->name || $client->id) || 'unknown LMS player';
     $log->info("Starting Chromecast YouTube cast for video $videoId on $playerName ($host)");
 }
