@@ -9,8 +9,6 @@ on:
       - "DefaultLogoHome/**"
       - "repo.xml.in"
       - ".github/workflows/release.yml"
-    tags:
-      - "v*"
 
 permissions:
   contents: write
@@ -28,60 +26,55 @@ jobs:
         id: version
         shell: bash
         run: |
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            VERSION="${GITHUB_REF_NAME#v}"
-          else
-            VERSION="0.1.4"
-          fi
+          VERSION="$(sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' UnifiedSearch/install.xml | head -1)"
+          test -n "$VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Build plugin ZIPs and SHA-1
         id: package
         shell: bash
         run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
           mkdir -p dist
           test -f UnifiedSearch/Plugin.pm
           test -f UnifiedSearch/install.xml
           test -f DefaultLogoHome/Plugin.pm
           test -f DefaultLogoHome/install.xml
-          zip -r dist/UnifiedSearch-0.1.3.zip UnifiedSearch
-          zip -r dist/DefaultLogoHome-0.1.1.zip DefaultLogoHome
-          echo "unified_sha=$(sha1sum dist/UnifiedSearch-0.1.3.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          zip -r "dist/UnifiedSearch-${VERSION}.zip" UnifiedSearch
+          zip -r "dist/DefaultLogoHome-0.1.1.zip" DefaultLogoHome
+          echo "unified_sha=$(sha1sum "dist/UnifiedSearch-${VERSION}.zip" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
           echo "logo_sha=$(sha1sum dist/DefaultLogoHome-0.1.1.zip | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Generate repository XML
         shell: bash
         run: |
+          VERSION="${{ steps.version.outputs.version }}"
           sed \
-            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.3\"/" \
+            -e "s/UNIFIED_VERSION/${VERSION}/g" \
             -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
             -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
             repo.xml.in > repo.xml
 
       - name: Commit repository metadata to main
-        if: github.ref_type == 'branch'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
           git checkout main
-          sed \
-            -e "s/version=\"UNIFIED_VERSION\"/version=\"0.1.3\"/" \
-            -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
-            -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
-            repo.xml.in > repo.xml
           git add repo.xml
-          git commit -m "Publish LMS add-on repository metadata" || true
-          git push origin main
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish LMS add-on repository metadata"
+            git push origin main
+          fi
 
       - name: Create GitHub release
-        if: github.ref_type == 'branch'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.4
-          name: Lyrion LMS add-ons v0.1.4
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Lyrion LMS add-ons v${{ steps.version.outputs.version }}
           generate_release_notes: true
           files: |
-            dist/UnifiedSearch-0.1.3.zip
+            dist/UnifiedSearch-${{ steps.version.outputs.version }}.zip
             dist/DefaultLogoHome-0.1.1.zip

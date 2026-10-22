@@ -17,14 +17,14 @@
             minTarget="8.0"
             maxTarget="*"
             sha="GENERATED_UNIFIED_SHA1"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.4/UnifiedSearch-0.1.3.zip"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/vUNIFIED_VERSION/UnifiedSearch-UNIFIED_VERSION.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Grouped search entry for the LMS library, YouTube and SpotOn</desc>
-            <desc lang="NL">Gecombineerde zoekingang voor de LMS-bibliotheek, YouTube en SpotOn</desc>
+            <desc lang="EN">Local library and SpotOn Spotify search alongside native LMS search providers</desc>
+            <desc lang="NL">Zoeken in de lokale bibliotheek en Spotify via SpotOn naast de bestaande LMS-zoekproviders</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -33,7 +33,7 @@
             minTarget="8.0"
             maxTarget="*"
             sha="GENERATED_LOGO_SHA1"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.3/DefaultLogoHome-0.1.1.zip"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/vUNIFIED_VERSION/DefaultLogoHome-0.1.1.zip"
             category="interface"
             creator="mrsjonnie"
         >
