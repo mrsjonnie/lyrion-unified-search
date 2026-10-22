@@ -113,7 +113,7 @@ sub _youtubeScreenId {
 
 sub _playVideo {
     my ($screenId, $videoId) = @_;
-    my $http = HTTP::Tiny->new(timeout => 10, agent => 'LyrionYouTubeCast/0.1.7');
+    my $http = HTTP::Tiny->new(timeout => 10, agent => 'LyrionYouTubeCast/0.1.8');
     my $tokenResponse = $http->post_form(LOUNGE_TOKEN_URL, { screen_ids => $screenId });
     die _httpError('Could not get YouTube Lounge token', $tokenResponse)
         unless $tokenResponse->{success};
