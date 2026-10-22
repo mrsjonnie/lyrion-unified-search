@@ -22,7 +22,10 @@ add-on settings; the selected player determines the target.
 The LMS YouTube plugin streams audio to its selected LMS player; this add-on
 independently starts the video on the mapped TV.
 Cast connection failures are written to `youtubecast-worker.log` in the LMS
-log directory.
+log directory. Process-start failures include the Perl executable, worker
+path, and OS error in the LMS log. On Linux systems, the LMS YouTube plugin
+must also have a working yt-dlp runtime; missing system libraries such as
+`libutil.so.1` prevent LMS from resolving playable YouTube tracks.
 
 ## Compatibility and requirements
 

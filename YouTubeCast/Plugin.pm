@@ -187,25 +187,32 @@ sub _startCastForUrl {
     }
 
     my $pluginDir = dirname(__FILE__);
-    my $workerOptions = { die_upon_destroy => 0 };
+    my $workerScript = catfile($pluginDir, 'cast_worker.pl');
+    my $workerOptions = { autodie => 1, die_upon_destroy => 0 };
     my $logDir = Slim::Utils::OSDetect::dirsFor('log');
     $workerOptions->{stderr} = catfile($logDir, 'youtubecast-worker.log') if $logDir;
 
     my $worker = eval {
         require Proc::Background;
         Proc::Background->new(
-            $workerOptions,
-            $^X,
-            '-I',
-            $pluginDir,
-            catfile($pluginDir, 'cast_worker.pl'),
-            $host,
-            $videoId,
+            {
+                %$workerOptions,
+                command => [
+                    $^X,
+                    '-I',
+                    $pluginDir,
+                    $workerScript,
+                    $host,
+                    $videoId,
+                ],
+            },
         );
     };
 
     if (!$worker || $@) {
-        $log->error('Could not start Chromecast worker: ' . ($@ || 'process creation failed'));
+        my $error = $@ || 'process creation failed without an error from Proc::Background';
+        $error =~ s/\s+\z//;
+        $log->error("Could not start Chromecast worker ($^X, $workerScript): $error");
         return;
     }
 
