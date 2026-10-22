@@ -19,7 +19,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="fb6219fe0a3979763d7bd01a716eab0cccd3d915"
+            sha="a6a4fd44922c8087f1e1023d82d63ebe0d8a9bf2"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.1/UnifiedSearch-0.1.1.zip"
             category="musicservices"
             creator="mrsjonnie"
