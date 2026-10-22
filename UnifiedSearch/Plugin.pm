@@ -8,6 +8,7 @@ use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
 use Slim::Utils::PluginManager;
 use Slim::Utils::Strings qw(string);
+use JSON::XS qw(encode_json);
 
 our $VERSION = '0.3.4';
 
@@ -48,6 +49,7 @@ sub initPlugin {
             my ($client, $params) = @_;
             return Slim::Web::HTTP::filltemplatefile('plugins/UnifiedSearch/search.html', $params);
         });
+        Slim::Web::Pages->addPageFunction('plugins/UnifiedSearch/results.json', \&searchResultsHandler);
         Slim::Web::Pages->addPageLinks('browse', {
             'PLUGIN_UNIFIEDSEARCH' => 'plugins/UnifiedSearch/search.html',
         });
@@ -82,9 +84,163 @@ sub applicationSearchFeed {
     return $callback->({ items => [] }) unless $enabled;
 
     my $query = $args && $args->{search} // '';
-    my $items = searchInfoMenu($client, { search => $query });
+    return $callback->({ items => [] }) unless length $query;
 
-    $callback->({ items => $items || [] });
+    _searchTopArtists($client, $query, undef, sub {
+        my ($sources) = @_;
+        my @items;
+
+        for my $source (qw(local youtube spotty spoton)) {
+            my $result = $sources->{$source};
+            next unless $result;
+            for my $hit (@{ $result->{items} || [] }) {
+                next unless ref $hit eq 'HASH';
+                my $name = _itemName($hit);
+                next unless length $name;
+
+                my %item = %$hit;
+                $item{name} = $result->{name} . ': ' . $name;
+                push @items, \%item;
+            }
+        }
+
+        $callback->({ items => \@items });
+    });
+}
+
+sub searchResultsHandler {
+    my ($client, $params, $callback, $httpClient, $response) = @_;
+    $response->content_type('application/json; charset=utf-8');
+
+    my $query = $params->{search} // '';
+    if (!$enabled || !length $query) {
+        my $json = encode_json({ sources => {} });
+        return $callback->($client, $params, \$json, $httpClient, $response);
+    }
+
+    _searchTopArtists($client, $query, $params->{source}, sub {
+        my ($sources) = @_;
+        my %formatted;
+        for my $source (keys %$sources) {
+            $formatted{$source} = {
+                name  => $sources->{$source}{name},
+                error => $sources->{$source}{error},
+                items => [ map { _itemName($_) } @{ $sources->{$source}{items} || [] } ],
+            };
+        }
+        my $json = encode_json({ sources => \%formatted });
+        $callback->($client, $params, \$json, $httpClient, $response);
+    });
+}
+
+sub _searchTopArtists {
+    my ($client, $query, $source_filter, $callback) = @_;
+    my @searches = ({
+        key         => 'local',
+        name        => string('PLUGIN_UNIFIEDSEARCH_LOCAL'),
+        handler     => \&localSearchFeed,
+        passthrough => { query => $query },
+    });
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::YouTube::Plugin')) {
+        my $loaded = eval { require Plugins::YouTube::Plugin; 1 };
+        if ($loaded && Plugins::YouTube::Plugin->can('searchHandler')) {
+            push @searches, {
+                key         => 'youtube',
+                name        => string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'),
+                handler     => \&youtubeSearchFeed,
+                passthrough => { query => $query },
+            };
+        }
+        elsif (!$loaded) {
+            $log->warn('YouTube live search unavailable: ' . ($@ || 'could not load plugin'));
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::Spotty::Plugin')) {
+        my $loaded = eval { require Plugins::Spotty::OPML; 1 };
+        if ($loaded && Plugins::Spotty::OPML->can('search')) {
+            push @searches, {
+                key         => 'spotty',
+                name        => string('PLUGIN_UNIFIEDSEARCH_SPOTTY'),
+                handler     => \&spottySearchFeed,
+                passthrough => { query => $query },
+            };
+        }
+        elsif (!$loaded) {
+            $log->warn('Spotty live search unavailable: ' . ($@ || 'could not load plugin'));
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::SpotOn::Plugin')) {
+        my $loaded = eval { require Plugins::SpotOn::Plugin; 1 };
+        if ($loaded && Plugins::SpotOn::Plugin->can('_searchTypeFeed')) {
+            push @searches, {
+                key         => 'spoton',
+                name        => string('PLUGIN_UNIFIEDSEARCH_SPOTON'),
+                handler     => \&spotonSearchFeed,
+                passthrough => { query => $query },
+            };
+        }
+        elsif (!$loaded) {
+            $log->warn('SpotOn live search unavailable: ' . ($@ || 'could not load plugin'));
+        }
+    }
+
+    @searches = grep { $_->{key} eq $source_filter } @searches if $source_filter;
+    if (!@searches) {
+        $callback->({});
+        return;
+    }
+
+    my %sources;
+    my $remaining = scalar @searches;
+    my $responded = 0;
+    my $finish = sub {
+        return if $responded;
+        $remaining--;
+        return if $remaining;
+        $responded = 1;
+        $callback->(\%sources);
+    };
+
+    for my $search (@searches) {
+        my $completed = 0;
+        my $source_callback = sub {
+            return if $completed;
+            $completed = 1;
+            my ($feed) = @_;
+            my @items = ref $feed eq 'HASH' && ref $feed->{items} eq 'ARRAY'
+                ? @{ $feed->{items} }
+                : ();
+            $sources{ $search->{key} } = {
+                name  => $search->{name},
+                items => \@items,
+                error => ref $feed eq 'HASH' && $feed->{search_error} ? 1 : 0,
+            };
+            $finish->();
+        };
+
+        my $ok = eval {
+            $search->{handler}->(
+                $client,
+                _resultsCallback($source_callback, $search->{name}, 3),
+                { search => $query, quantity => 3 },
+                $search->{passthrough},
+            );
+            1;
+        };
+        if (!$ok) {
+            $log->warn('Live search failed for ' . $search->{key} . ': ' . ($@ || 'unknown error'));
+            $source_callback->({ search_error => 1 });
+        }
+    }
+}
+
+sub _itemName {
+    my ($item) = @_;
+    return '' unless ref $item eq 'HASH';
+    return $item->{name} || $item->{artist} || $item->{album} || $item->{title} || $item->{channel} || '';
 }
 
 sub getDisplayName {
@@ -183,7 +339,7 @@ sub localSearchFeed {
 
     Slim::Menu::BrowseLibrary::_artists(
         $client,
-        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_LOCAL')),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_LOCAL'), 3),
         \%search_args,
         {},
     );
@@ -198,7 +354,7 @@ sub youtubeSearchFeed {
 
     Plugins::YouTube::Plugin::searchHandler(
         $client,
-        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE')),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'), 3),
         \%search_args,
         { type => 'channel' },
     );
@@ -213,7 +369,7 @@ sub spottySearchFeed {
 
     Plugins::Spotty::OPML::search(
         $client,
-        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTTY')),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTTY'), 3),
         \%search_args,
         { type => 'artist' },
     );
@@ -227,20 +383,20 @@ sub spotonSearchFeed {
 
     Plugins::SpotOn::Plugin::_searchTypeFeed(
         $client,
-        _artistResultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTON')),
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTON'), 3),
         \%search_args,
         { query => $query, type => 'artist' },
     );
 }
 
-sub _artistResultsCallback {
-    my ($callback, $name) = @_;
+sub _resultsCallback {
+    my ($callback, $name, $limit) = @_;
 
     return sub {
         my ($feed) = @_;
         $feed = {} unless ref $feed eq 'HASH';
         my @items = ref $feed->{items} eq 'ARRAY' ? @{ $feed->{items} } : ();
-        splice @items, 3 if @items > 3;
+        splice @items, $limit if defined $limit && @items > $limit;
 
         $callback->({
             %$feed,

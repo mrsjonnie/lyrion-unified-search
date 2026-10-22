@@ -3,8 +3,28 @@ PLUGIN_UNIFIEDSEARCH
 	NL	Unified Search
 
 PLUGIN_UNIFIEDSEARCH_DESC
-	EN	Show three artist matches per source from your local library, YouTube, Spotty, and SpotOn.
-	NL	Toon drie artiesten per bron uit je lokale bibliotheek, YouTube, Spotty en SpotOn.
+	EN	Type to search all available sources and see the three best artist matches per source live.
+	NL	Typ om alle beschikbare bronnen te doorzoeken en direct de drie beste artiesten per bron te zien.
+
+PLUGIN_UNIFIEDSEARCH_PLACEHOLDER
+	EN	Search artists, albums, and tracks...
+	NL	Zoek artiesten, albums en nummers...
+
+PLUGIN_UNIFIEDSEARCH_TYPE_TO_SEARCH
+	EN	Type to search all available sources.
+	NL	Typ om alle beschikbare bronnen te doorzoeken.
+
+PLUGIN_UNIFIEDSEARCH_SEARCHING
+	EN	Searching...
+	NL	Zoeken...
+
+PLUGIN_UNIFIEDSEARCH_NO_RESULTS
+	EN	No results found.
+	NL	Geen resultaten gevonden.
+
+PLUGIN_UNIFIEDSEARCH_ERROR
+	EN	Search failed. Please try again.
+	NL	Zoeken mislukt. Probeer het opnieuw.
 
 PLUGIN_UNIFIEDSEARCH_LOCAL
 	EN	Local library

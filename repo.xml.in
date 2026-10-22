@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Three artist matches per source; includes automatic YouTube Chromecast casting</desc>
-            <desc lang="NL">Drie artiesten per bron; bevat automatisch YouTube casten naar Chromecast</desc>
+            <desc lang="EN">Live search showing three artist matches per available source</desc>
+            <desc lang="NL">Live zoeken met drie artiesten per beschikbare bron</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
