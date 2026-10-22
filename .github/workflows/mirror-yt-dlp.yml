@@ -1,0 +1,79 @@
+name: Mirror upstream yt-dlp Linux binary
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "yt-dlp release tag (leave empty for latest)"
+        required: false
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/mirror-yt-dlp.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mirror-yt-dlp
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Resolve upstream release
+        id: release
+        env:
+          REQUESTED_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${REQUESTED_TAG:-}" ]; then
+            TAG="${REQUESTED_TAG}"
+          else
+            TAG="$(curl -fsSL https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest | jq -r .tag_name)"
+          fi
+          test -n "$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Mirroring yt-dlp release $TAG"
+
+      - name: Download and verify upstream binary
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://github.com/yt-dlp/yt-dlp/releases/download/$TAG"
+          mkdir -p vendor/yt-dlp
+          curl -fL --retry 3 "$BASE/yt-dlp_linux" -o vendor/yt-dlp/yt-dlp_linux
+          curl -fL --retry 3 "$BASE/SHA2-256SUMS" -o /tmp/SHA2-256SUMS
+          EXPECTED="$(awk '$2 == "yt-dlp_linux" {print $1}' /tmp/SHA2-256SUMS)"
+          test -n "$EXPECTED"
+          ACTUAL="$(sha256sum vendor/yt-dlp/yt-dlp_linux | awk '{print $1}')"
+          test "$EXPECTED" = "$ACTUAL"
+          chmod 755 vendor/yt-dlp/yt-dlp_linux
+          printf '%s\n' "$TAG" > vendor/yt-dlp/VERSION
+          printf '%s  %s\n' "$EXPECTED" "yt-dlp_linux" > vendor/yt-dlp/SHA256SUM
+          curl -fL --retry 3 "https://raw.githubusercontent.com/yt-dlp/yt-dlp/$TAG/THIRD_PARTY_LICENSES.txt" -o vendor/yt-dlp/THIRD_PARTY_LICENSES.txt
+
+      - name: Commit mirrored binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor/yt-dlp/yt-dlp_linux vendor/yt-dlp/VERSION vendor/yt-dlp/SHA256SUM vendor/yt-dlp/THIRD_PARTY_LICENSES.txt
+          if git diff --cached --quiet; then
+            echo "The mirrored yt-dlp binary is already up to date."
+            exit 0
+          fi
+          git commit -m "Vendor yt-dlp Linux binary ${{ steps.release.outputs.tag }}"
+          git push origin HEAD:main
