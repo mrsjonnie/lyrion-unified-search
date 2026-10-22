@@ -3,7 +3,7 @@
     <name>Lyrion Unified Search</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Shows three artist matches per source; includes automatic YouTube Chromecast casting.</description>
+    <description>Live search with three artist matches per source and full artist, album, and track results.</description>
     <category>musicservices</category>
     <id>2c03f0a2-8b53-4f4d-a171-5d2b5c1b91a7</id>
     <icon>html/images/search.png</icon>
@@ -14,5 +14,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.3.4</version>
+    <version>0.3.5</version>
 </extension>

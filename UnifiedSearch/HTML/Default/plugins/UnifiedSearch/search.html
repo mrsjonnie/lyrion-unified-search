@@ -1,14 +1,164 @@
-[%- pagetitle = 'PLUGIN_UNIFIEDSEARCH' | string %]
+[% pagetitle = 'PLUGIN_UNIFIEDSEARCH' | string %]
 [% PROCESS pageheader.html %]
 
 <div class="searchHeader">
 	<p>[% "PLUGIN_UNIFIEDSEARCH_DESC" | string %]</p>
 	<form id="unifiedSearchForm" method="GET" action="[% webroot %]clixmlbrowser/clicmd=globalsearch+items">
-		<input type="text" name="search" size="30" value="[% search | html %]" autocomplete="off" />
+		<input
+			id="unifiedSearchInput"
+			type="text"
+			name="search"
+			size="40"
+			value="[% search | html %]"
+			autocomplete="off"
+			autofocus
+			placeholder="[% 'PLUGIN_UNIFIEDSEARCH_PLACEHOLDER' | string %]"
+			aria-label="[% 'PLUGIN_UNIFIEDSEARCH_PLACEHOLDER' | string %]"
+		/>
 		<input type="hidden" name="menu" value="1" />
 		<input type="hidden" name="player" value="[% player %]" />
-		<input type="submit" value="[% "SEARCH" | string %]" />
+		<noscript><input type="submit" value="[% 'SEARCH' | string %]" /></noscript>
 	</form>
 </div>
+
+<div id="unifiedSearchStatus" role="status" aria-live="polite">[% 'PLUGIN_UNIFIEDSEARCH_TYPE_TO_SEARCH' | string %]</div>
+<div id="unifiedSearchResults" aria-live="polite"></div>
+
+<script type="text/javascript">
+(function () {
+	var form = document.getElementById('unifiedSearchForm');
+	var input = document.getElementById('unifiedSearchInput');
+	var status = document.getElementById('unifiedSearchStatus');
+	var results = document.getElementById('unifiedSearchResults');
+	var webroot = '[% webroot %]';
+	var player = '[% player %]';
+	var timer;
+	var activeRequests = [];
+	var requestId = 0;
+	var sourceOrder = ['local', 'youtube', 'spotty', 'spoton'];
+
+	function clearResults() {
+		while (results.firstChild) {
+			results.removeChild(results.firstChild);
+		}
+	}
+
+	function addMoreLink(section, source, query) {
+		var more = document.createElement('a');
+		var url = webroot + 'clixmlbrowser/clicmd=unifiedsearch+more&source=' +
+			encodeURIComponent(source) + '&search=' + encodeURIComponent(query);
+
+		if (player) {
+			url += '&player=' + encodeURIComponent(player);
+		}
+		more.href = url + '/index.html?index=0';
+		more.appendChild(document.createTextNode('[% "PLUGIN_UNIFIEDSEARCH_MORE" | string %]'));
+		section.appendChild(more);
+	}
+
+	function render(data, source, query) {
+		var result = data.sources && data.sources[source];
+		if (!result) {
+			return false;
+		}
+
+		var section = document.createElement('section');
+		var heading = document.createElement('h2');
+		heading.appendChild(document.createTextNode(result.name));
+		section.appendChild(heading);
+
+		var list = document.createElement('ul');
+		var count = 0;
+		(result.items || []).slice(0, 3).forEach(function (name) {
+			if (!name) {
+				return;
+			}
+			var item = document.createElement('li');
+			item.appendChild(document.createTextNode(name));
+			list.appendChild(item);
+			count++;
+		});
+		if (!count) {
+			var empty = document.createElement('li');
+			empty.appendChild(document.createTextNode(result.error
+				? '[% "PLUGIN_UNIFIEDSEARCH_ERROR" | string %]'
+				: '[% "PLUGIN_UNIFIEDSEARCH_NO_RESULTS" | string %]'));
+			list.appendChild(empty);
+		}
+		section.appendChild(list);
+		addMoreLink(section, source, query);
+		results.appendChild(section);
+		return count > 0;
+	}
+
+	function search() {
+		var query = input.value.replace(/^\s+|\s+$/g, '');
+		var id = ++requestId;
+
+		activeRequests.forEach(function (request) { request.abort(); });
+		activeRequests = [];
+		clearResults();
+
+		if (!query) {
+			status.textContent = '[% "PLUGIN_UNIFIEDSEARCH_TYPE_TO_SEARCH" | string %]';
+			return;
+		}
+
+		status.textContent = '[% "PLUGIN_UNIFIEDSEARCH_SEARCHING" | string %]';
+		var remaining = sourceOrder.length;
+		var hasResults = false;
+		var failed = false;
+
+		sourceOrder.forEach(function (source) {
+			var xhr = new XMLHttpRequest();
+			activeRequests.push(xhr);
+			xhr.open('GET', webroot + 'plugins/UnifiedSearch/results.json?search=' +
+				encodeURIComponent(query) + '&source=' + encodeURIComponent(source) +
+				'&player=' + encodeURIComponent(player), true);
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState !== 4 || id !== requestId) {
+					return;
+				}
+				if (xhr.status < 200 || xhr.status >= 300) {
+					failed = true;
+				}
+				else {
+					try {
+						var data = JSON.parse(xhr.responseText);
+						failed = !!(data.sources && data.sources[source] && data.sources[source].error) || failed;
+						hasResults = render(data, source, query) || hasResults;
+					}
+					catch (error) {
+						failed = true;
+					}
+				}
+				remaining--;
+				if (!remaining && id === requestId) {
+					activeRequests = [];
+					status.textContent = hasResults
+						? ''
+						: (failed
+							? '[% "PLUGIN_UNIFIEDSEARCH_ERROR" | string %]'
+							: '[% "PLUGIN_UNIFIEDSEARCH_NO_RESULTS" | string %]');
+				}
+			};
+			xhr.send(null);
+		});
+	}
+
+	form.onsubmit = function (event) {
+		if (event && event.preventDefault) {
+			event.preventDefault();
+		}
+		search();
+		return false;
+	};
+	input.oninput = function () {
+		window.clearTimeout(timer);
+		timer = window.setTimeout(search, 250);
+	};
+	input.focus();
+}());
+</script>
 
 [% PROCESS pagefooter.html %]
