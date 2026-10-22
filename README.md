@@ -10,7 +10,7 @@ A standalone add-on for Lyrion Music Server (LMS) that adds one grouped entry to
 - Reuses SpotOn's existing search feed when SpotOn is installed and enabled.
 - Does not edit Material Skin, YouTube, SpotOn, LMS core, or the Default skin.
 
-The initial implementation groups the three source actions under one search-provider entry. It is not yet a single flat, cross-provider result list; each source continues to render results using its own existing LMS feed. The local-library destination is specific to the author's current LMS address and should be made configurable before a general public release.
+The initial implementation groups the three source actions under one search-provider entry. It is not yet a single flat, cross-provider result list; each source continues to render results using its own existing LMS feed. The local-library destination is specific to the author's current LMS address and should be made configurable before a general public release. The requested change to the Lyrion logo link in the Default skin is not included in this first version; no skin files are changed.
 
 ## Compatibility and requirements
 
