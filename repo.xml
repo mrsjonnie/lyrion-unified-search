@@ -16,7 +16,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="a96f3ad8ea88eccb6704c8f5220ed02de24d2677"
+            sha="10698028cbd7902165e87cbbd752023a6a814359"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/UnifiedSearch-0.3.4.zip"
             category="musicservices"
             creator="mrsjonnie"
@@ -32,7 +32,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="a0f33086f58f3bec1ef569f5bbbb1d55a232a640"
+            sha="52b4e02bfe6b2020ae5d453c286ace0d6862aef6"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
@@ -44,19 +44,19 @@
         </plugin>
         <plugin
             name="YouTubeCast"
-            version="0.1.1"
+            version="0.1.2"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="8b2f6e3700b0655a619a755e7363a0cb3d88d6dd"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/YouTubeCast-0.1.1.zip"
+            sha="4e0f7262ae1560ea057e270dc4f09495426f412f"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/YouTubeCast-0.1.2.zip"
             category="interface"
             creator="mrsjonnie"
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Starts casting immediately when an LMS YouTube track begins playback, whether or not LMS transcodes it</desc>
-            <desc lang="NL">Start direct met casten zodra LMS een YouTube-track afspeelt, met of zonder transcoding</desc>
+            <desc lang="EN">Starts the original YouTube video when an LMS play request is made, without waiting for audio playback</desc>
+            <desc lang="NL">Start de originele YouTube-video bij een LMS-afspeelopdracht, zonder te wachten op audioweergave</desc>
         </plugin>
     </plugins>
 </extensions>
