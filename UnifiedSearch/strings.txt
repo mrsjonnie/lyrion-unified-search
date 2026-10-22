@@ -1,0 +1,14 @@
+PLUGIN_UNIFIEDSEARCH
+	Unified Search
+
+PLUGIN_UNIFIEDSEARCH_DESC
+	Search your local LMS library, YouTube and SpotOn from one place.
+
+PLUGIN_UNIFIEDSEARCH_LOCAL
+	Local library (LMS web search)
+
+PLUGIN_UNIFIEDSEARCH_YOUTUBE
+	YouTube
+
+PLUGIN_UNIFIEDSEARCH_SPOTON
+	SpotOn (Spotify)
