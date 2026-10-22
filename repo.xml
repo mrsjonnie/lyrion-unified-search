@@ -12,12 +12,12 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.3.11"
+            version="0.3.12"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="3e9b223380630215e61277b981377ee8a164f2bd"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.11/UnifiedSearch-0.3.11.zip"
+            sha="a59f0a8077fb8ce7e5917ea2986ec78564386408"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.12/UnifiedSearch-0.3.12.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
@@ -32,8 +32,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="e243bdb0315bf0e8477a246c8d15387c6a002124"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.11/DefaultLogoHome-0.1.5.zip"
+            sha="4c848827a01be36a447565dfb4c58e40bc6a526b"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.12/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
         >
@@ -48,8 +48,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="2f0ca46461a3bec33fef77ca9fca2895aabc6ef2"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.11/YouTubeCast-0.1.8.zip"
+            sha="b7ad619269421aa633c61bfc0f7498ba29a1c760"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.12/YouTubeCast-0.1.8.zip"
             category="interface"
             creator="mrsjonnie"
         >
