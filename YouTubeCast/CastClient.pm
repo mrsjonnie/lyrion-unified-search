@@ -113,7 +113,7 @@ sub _youtubeScreenId {
 
 sub _playVideo {
     my ($screenId, $videoId) = @_;
-    my $http = HTTP::Tiny->new(timeout => 10, agent => 'LyrionYouTubeCast/0.1.6');
+    my $http = HTTP::Tiny->new(timeout => 10, agent => 'LyrionYouTubeCast/0.1.7');
     my $tokenResponse = $http->post_form(LOUNGE_TOKEN_URL, { screen_ids => $screenId });
     die _httpError('Could not get YouTube Lounge token', $tokenResponse)
         unless $tokenResponse->{success};
@@ -140,7 +140,7 @@ sub _playVideo {
             pairing_type  => 'cast',
             app           => 'android-phone-13.14.55',
         },
-        \%headers,
+        { headers => \%headers },
     );
     die _httpError('Could not establish YouTube Lounge session', $bindResponse)
         unless $bindResponse->{success};
@@ -169,7 +169,7 @@ sub _playVideo {
             CVER       => 1,
         }),
         \%playData,
-        \%headers,
+        { headers => \%headers },
     );
     die _httpError('YouTube rejected the video play request', $playResponse)
         unless $playResponse->{success};

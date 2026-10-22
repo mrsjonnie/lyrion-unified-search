@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.8';
+our $VERSION = '0.3.9';
 
 my $enabled = 0;
 
@@ -65,6 +65,15 @@ sub initPlugin {
         type   => 'link',
         weight => 100,
     );
+
+    if (main::WEBUI) {
+        Slim::Web::Pages->addPageFunction('plugins/unifiedsearch/index.html', sub {
+            return \'' unless $enabled;
+
+            my ($client, $params) = @_;
+            return Slim::Web::HTTP::filltemplatefile('plugins/UnifiedSearch/search.html', $params);
+        });
+    }
 
     $log->debug('UnifiedSearch registered Global Search provider');
 }
