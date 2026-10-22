@@ -8,6 +8,7 @@ use URI::Escape qw(uri_escape_utf8);
 use File::Path qw(make_path);
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
+use Slim::Utils::Prefs;
 
 our $VERSION = '0.1.8';
 
@@ -157,8 +158,6 @@ sub _removeMaterialSkinSearchHook {
     my $existing = <$in> // '';
     close $in;
 
-    my $start = quotemeta($MATERIAL_HOOK_START);
-    my $end   = quotemeta($MATERIAL_HOOK_END);
     my $count = ($existing =~ s/\n?\Q$MATERIAL_HOOK_START\E.*?\Q$MATERIAL_HOOK_END\E\n?//s);
     return unless $count;
 
