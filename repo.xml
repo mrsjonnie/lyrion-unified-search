@@ -16,7 +16,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="180bf8fd168976bbab39687423054d1ede92b651"
+            sha="9a2aa22af6d93e35692340397d3a84c3ee61bf54"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.2/UnifiedSearch-0.1.2.zip"
             category="musicservices"
             creator="mrsjonnie"
@@ -28,11 +28,11 @@
         </plugin>
         <plugin
             name="DefaultLogoHome"
-            version="0.1.2"
+            version="0.1.0"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="e1445df28337ab87c91314e2a56ca895a239e054"
+            sha="5e88065bc587dab4b1de5b1a2b480ff649bc5988"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.2/DefaultLogoHome-0.1.0.zip"
             category="interface"
             creator="mrsjonnie"
