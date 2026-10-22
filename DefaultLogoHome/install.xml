@@ -3,7 +3,7 @@
     <name>PLUGIN_DEFAULTLOGOHOME</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>PLUGIN_DEFAULTLOGOHOME_DESC</description>
+    <description>Makes the Default skin logo open the LMS home page.</description>
     <category>interface</category>
     <id>4c8f6a6b-55b0-4a70-8c5d-25b184e29e3c</id>
     <module>Plugins::DefaultLogoHome::Plugin</module>
@@ -13,5 +13,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
 </extension>

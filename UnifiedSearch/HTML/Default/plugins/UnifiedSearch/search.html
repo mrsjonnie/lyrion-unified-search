@@ -1,0 +1,14 @@
+[%- pagetitle = 'PLUGIN_UNIFIEDSEARCH' | string %]
+[% PROCESS pageheader.html %]
+
+<div class="searchHeader">
+	<p>[% "PLUGIN_UNIFIEDSEARCH_DESC" | string %]</p>
+	<form id="unifiedSearchForm" method="GET" action="[% webroot %]clixmlbrowser/clicmd=globalsearch+items">
+		<input type="text" name="search" size="30" value="[% search | html %]" autocomplete="off" />
+		<input type="hidden" name="menu" value="1" />
+		<input type="hidden" name="player" value="[% player %]" />
+		<input type="submit" value="[% "SEARCH" | string %]" />
+	</form>
+</div>
+
+[% PROCESS pagefooter.html %]
