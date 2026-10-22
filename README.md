@@ -13,10 +13,13 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 The repository also includes **YouTube Cast for Chromecast**, a separate add-on
 that starts the native YouTube app on a configured Google Cast device whenever
-an LMS YouTube track starts. Set the Chromecast's stable IP address or hostname
-and enable automatic casting in the add-on settings. The LMS YouTube plugin
-streams audio to its selected LMS player; this add-on independently starts the
-video on the configured TV.
+an LMS YouTube track begins playback. Casting is triggered by LMS's playback
+notification and works whether or not LMS transcodes the audio. Set the
+Chromecast's stable IP address or hostname and enable automatic casting in the
+add-on settings. The LMS YouTube plugin streams audio to its selected LMS
+player; this add-on independently starts the video on the configured TV.
+Cast connection failures are written to `youtubecast-worker.log` in the LMS
+log directory.
 
 ## Compatibility and requirements
 

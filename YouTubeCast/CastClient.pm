@@ -32,12 +32,19 @@ sub cast_youtube {
 
     _sendMessage($socket, RECEIVER_ID, CONNECTION_NS, { type => 'CONNECT' });
     _sendMessage($socket, RECEIVER_ID, RECEIVER_NS, {
-        type    => 'LAUNCH',
-        appId   => YOUTUBE_APP_ID,
+        type      => 'LAUNCH',
+        appId     => YOUTUBE_APP_ID,
         requestId => 1,
     });
 
-    my $deadline = time() + 10;
+    sleep(0.5);
+    my $requestId = 2;
+    _sendMessage($socket, RECEIVER_ID, RECEIVER_NS, {
+        type      => 'GET_STATUS',
+        requestId => $requestId++,
+    });
+
+    my $deadline = time() + 20;
     my $transportId;
     while (time() < $deadline) {
         my $message = _readMessage($socket, $deadline - time());
@@ -59,6 +66,12 @@ sub cast_youtube {
             last;
         }
         last if $transportId;
+
+        sleep(0.5);
+        _sendMessage($socket, RECEIVER_ID, RECEIVER_NS, {
+            type      => 'GET_STATUS',
+            requestId => $requestId++,
+        });
     }
     die 'Chromecast did not start the YouTube app' unless $transportId;
 
@@ -69,6 +82,7 @@ sub cast_youtube {
         data => {
             currentTime => 0,
             videoId     => $videoId,
+            doSeek      => JSON::XS::true,
         },
     });
 

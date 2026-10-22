@@ -8,7 +8,9 @@ use File::Basename qw(dirname);
 use File::Spec::Functions qw(catfile);
 use Slim::Control::Request;
 use Slim::Utils::Log;
+use Slim::Utils::OSDetect;
 use Slim::Utils::Prefs;
+use Slim::Player::Playlist;
 
 my $prefs = preferences('plugin.youtubecast');
 my $log = Slim::Utils::Log->addLogCategory({
@@ -69,16 +71,24 @@ sub _onNewSong {
     }
 
     my $client = $request->client;
-    my $song = $client && $client->playingSong;
-    my $track = $song && $song->track;
-    my $videoId = $track && _youtubeVideoId($track->url || '');
-    return unless $videoId;
+    return unless $client;
+
+    my $url = Slim::Player::Playlist::url($client) || '';
+    my $videoId = _youtubeVideoId($url);
+    unless ($videoId) {
+        $log->debug("Playback started for non-YouTube track: $url");
+        return;
+    }
 
     my $pluginDir = dirname(__FILE__);
+    my $workerOptions = { die_upon_destroy => 0 };
+    my $logDir = Slim::Utils::OSDetect::dirsFor('log');
+    $workerOptions->{stderr} = catfile($logDir, 'youtubecast-worker.log') if $logDir;
+
     my $worker = eval {
         require Proc::Background;
         Proc::Background->new(
-            { die_upon_destroy => 0 },
+            $workerOptions,
             $^X,
             '-I',
             $pluginDir,
@@ -106,7 +116,7 @@ sub _validHost {
 sub _youtubeVideoId {
     my ($url) = @_;
 
-    return $1 if $url =~ m{(?:youtube\.com/(?:watch\?[^#]*?\bv=|embed/|v/|shorts/|live/)|youtu\.be/)([A-Za-z0-9_-]{11})}i;
+    return $1 if $url =~ m{(?:youtube\.com/(?:watch\?[^#]*?\bv=|embed/|v/|shorts/|live/)|youtu\.be/)([A-Za-z0-9_-]{11})(?:[?&#]|\z)}i;
     return $1 if $url =~ m{\Ayoutube://([A-Za-z0-9_-]{11})(?:[?&]|\z)}i;
 
     return;

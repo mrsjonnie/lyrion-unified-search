@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Shows three artist matches per source from the local library, YouTube, Spotify, and SpotOn</desc>
-            <desc lang="NL">Toont drie artiesten per bron uit de lokale bibliotheek, YouTube, Spotify en SpotOn</desc>
+            <desc lang="EN">Three artist matches per source; includes automatic YouTube Chromecast casting</desc>
+            <desc lang="NL">Drie artiesten per bron; bevat automatisch YouTube casten naar Chromecast</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -55,8 +55,8 @@
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Starts the native YouTube app on a configured Google Cast device when an LMS YouTube track starts</desc>
-            <desc lang="NL">Start de native YouTube-app op een ingestelde Google Cast-tv wanneer een LMS-YouTube-track begint</desc>
+            <desc lang="EN">Starts casting immediately when an LMS YouTube track begins playback, whether or not LMS transcodes it</desc>
+            <desc lang="NL">Start direct met casten zodra LMS een YouTube-track afspeelt, met of zonder transcoding</desc>
         </plugin>
     </plugins>
 </extensions>
