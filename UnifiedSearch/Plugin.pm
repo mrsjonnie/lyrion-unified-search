@@ -9,7 +9,9 @@ use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
 use Slim::Utils::Network;
 
-our $VERSION = '0.1.8';
+our $VERSION = '0.1.9';
+
+my $enabled = 0;
 
 my $log = Slim::Utils::Log->addLogCategory({
     category     => 'plugin.unifiedsearch',
@@ -19,6 +21,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 
 sub initPlugin {
     my $class = shift;
+    $enabled = 1;
 
     # Keep these messages at WARN temporarily so they are visible with the
     # default LMS logging level. They confirm whether LMS loads this module.
@@ -37,6 +40,19 @@ sub initPlugin {
     if (!$registered) {
         $log->error('UnifiedSearch could not register Global Search provider: ' . ($@ || 'unknown error'));
         return;
+    }
+
+    if (main::WEBUI) {
+        require Slim::Web::Pages;
+        Slim::Web::Pages->addPageFunction('plugins/UnifiedSearch/search.html', sub {
+            return \'' unless $enabled;
+
+            my ($client, $params) = @_;
+            return Slim::Web::HTTP::filltemplatefile('plugins/UnifiedSearch/search.html', $params);
+        });
+        Slim::Web::Pages->addPageLinks('browse', {
+            'PLUGIN_UNIFIEDSEARCH' => 'plugins/UnifiedSearch/search.html',
+        });
     }
 
     $log->warn('UnifiedSearch registered Global Search provider');
@@ -88,7 +104,9 @@ sub searchInfoMenu {
 }
 
 sub shutdownPlugin {
+    $enabled = 0;
     Slim::Menu::GlobalSearch->deregisterInfoProvider('unifiedsearch');
+    Slim::Web::Pages->delPageLinks('browse', 'PLUGIN_UNIFIEDSEARCH') if main::WEBUI;
 }
 
 1;

@@ -3,9 +3,15 @@ package Plugins::DefaultLogoHome::Plugin;
 use strict;
 use warnings;
 use base qw(Slim::Plugin::Base);
+use Slim::Utils::Log;
 
 my $enabled = 0;
 my $registered = 0;
+my $log = Slim::Utils::Log->addLogCategory({
+    category     => 'plugin.defaultlogohome',
+    defaultLevel => 'WARN',
+    description  => 'Default skin logo links to the LMS home page',
+});
 
 sub initPlugin {
     my $class = shift;
@@ -15,16 +21,28 @@ sub initPlugin {
     return if $registered;
 
     require Slim::Web::Pages;
-    require Slim::Web::Pages::JS;
 
-    Slim::Web::Pages->addPageFunction("js-main-logo-home.js", sub {
-        return \'' unless $enabled;
+    my $homeHandler = Slim::Web::Pages->getPageFunction('index.html');
+    if (!$homeHandler) {
+        $log->error('DefaultLogoHome could not find the LMS home page handler');
+        return;
+    }
 
-        my ($client, $params) = @_;
-        return Slim::Web::HTTP::filltemplatefile("js-main-logo-home.js", $params);
-    });
+    my $homePage = sub {
+        my $params = $_[1];
+        my $page = $homeHandler->(@_);
+        return $page unless $enabled
+            && ($params->{systemSkin} // '') eq 'Default'
+            && ref($page) eq 'SCALAR';
 
-    Slim::Web::Pages::JS->addJSFunction("js-main", "js-main-logo-home.js");
+        my $html = $$page;
+        my $webroot = $params->{webroot} || '/';
+        $html =~ s{(<a\b[^>]*\bhref=["'])https?://(?:www\.)?lyrion\.org/?(["'])}{$1$webroot$2}i;
+        return \$html;
+    };
+
+    Slim::Web::Pages->addPageFunction(qr/^$/, $homePage);
+    Slim::Web::Pages->addPageFunction(qr/^index\.(?:htm|xml)/, $homePage);
     $registered = 1;
 }
 
