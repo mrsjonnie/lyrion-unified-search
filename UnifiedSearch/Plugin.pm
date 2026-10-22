@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.13';
+our $VERSION = '0.3.14';
 
 my $enabled = 0;
 
@@ -110,7 +110,9 @@ sub applicationSearchFeed {
                 next unless length $name;
 
                 my %item = %$hit;
-                $item{name} = $result->{name} . ': ' . $name;
+                $item{name} = $source eq 'bbcsounds'
+                    ? $name
+                    : $result->{name} . ': ' . $name;
                 push @items, \%item;
             }
         }
@@ -507,7 +509,7 @@ sub youtubeSearchFeed {
         $client,
         _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_YOUTUBE'), 3),
         \%search_args,
-        { type => 'channel' },
+        { type => 'video' },
     );
 }
 
@@ -604,6 +606,17 @@ sub bbcSoundsSearchFeed {
             return $callback->({ items => [], search_error => 1 });
         }
 
+        my $feed_items = ref $feed->{items} eq 'ARRAY' ? $feed->{items} : [];
+        my @items = map {
+            if (ref $_ eq 'HASH') {
+                my $name = _itemName($_);
+                length($name) ? { %$_, name => 'BBC: ' . $name } : $_;
+            }
+            else {
+                $_;
+            }
+        } @$feed_items;
+        $feed = { %$feed, items => \@items };
         $result_callback->($feed);
     };
 
