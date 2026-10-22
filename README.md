@@ -4,10 +4,11 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 ## What it does
 
-- Adds a **Unified Search** entry to the LMS Default skin's Browse menu, with one query form for the LMS Global Search providers.
+- Adds a **Unified Search** entry to Material Skin's **Applications** menu and the LMS Default skin's Browse menu.
+- Opens one query form for LMS Global Search providers from either entry.
 - Adds **Local library** and, when SpotOn is enabled, **Spotify (SpotOn)** as selectable results.
 - Leaves YouTube's native Global Search provider intact, so it appears alongside the new entries when the YouTube plugin is enabled.
-- Registers with LMS Global Search so Material Skin's existing search field shows the same search providers. Material's own interface is used; no Material Skin files are modified.
+- Registers with LMS Global Search and adds the Material Applications entry through LMS BrowseLibrary modes; no Material Skin files are modified.
 - Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.
 
 ## Compatibility and requirements
@@ -33,6 +34,6 @@ Click **Apply**, install **Lyrion Unified Search**, and restart LMS if requested
 
 The GitHub Actions workflow packages both add-ons using the versions in their respective `install.xml` files, calculates their SHA-1 hashes, updates `repo.xml`, and publishes a release tagged with the UnifiedSearch version. Bump the version of each changed add-on before publishing a new release.
 
-Disabling either add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider and removes its Browse-menu entry; Default Logo Home returns the original server-rendered logo link.
+Disabling either add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider and removes its Default and Material menu entries; Default Logo Home returns the original server-rendered logo link.
 
-DefaultLogoHome changes the logo link in the server-rendered Default skin home page, so the browser does not depend on a cached JavaScript override. In Material Skin, search from its existing search field; Local library and SpotOn appear in the Global Search results. The package still needs an end-to-end check on the target LMS installation, including both skins and SpotOn results.
+DefaultLogoHome changes the logo link in the server-rendered Default skin home page to the LMS root, not the skin-specific `/Default/` path. The package still needs an end-to-end check on the target LMS installation, including the Material Applications entry and SpotOn results.

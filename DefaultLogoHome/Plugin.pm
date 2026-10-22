@@ -37,6 +37,8 @@ sub initPlugin {
 
         my $html = $$page;
         my $webroot = $params->{webroot} || '/';
+        $webroot =~ s{Default/?$}{}i;
+        $webroot = '/' unless length $webroot;
         $html =~ s{(<a\b[^>]*\bhref=["'])https?://(?:www\.)?lyrion\.org/?(["'])}{$1$webroot$2}i;
         return \$html;
     };
