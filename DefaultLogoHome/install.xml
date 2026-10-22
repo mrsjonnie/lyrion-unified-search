@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension>
+    <name>PLUGIN_DEFAULTLOGOHOME</name>
+    <creator>mrsjonnie</creator>
+    <defaultState>enabled</defaultState>
+    <description>PLUGIN_DEFAULTLOGOHOME_DESC</description>
+    <category>interface</category>
+    <id>4c8f6a6b-55b0-4a70-8c5d-25b184e29e3c</id>
+    <module>Plugins::DefaultLogoHome::Plugin</module>
+    <targetApplication>
+        <id>SqueezeCenter</id>
+        <minVersion>8.0</minVersion>
+        <maxVersion>*</maxVersion>
+    </targetApplication>
+    <type>2</type>
+    <version>0.1.0</version>
+</extension>
