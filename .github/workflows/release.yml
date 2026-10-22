@@ -7,6 +7,7 @@ on:
     paths:
       - "UnifiedSearch/**"
       - "DefaultLogoHome/**"
+      - "YouTubeCast/**"
       - "repo.xml.in"
       - ".github/workflows/release.yml"
 
@@ -28,10 +29,13 @@ jobs:
         run: |
           UNIFIED_VERSION="$(sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' UnifiedSearch/install.xml | head -1)"
           LOGO_VERSION="$(sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' DefaultLogoHome/install.xml | head -1)"
+          YOUTUBECAST_VERSION="$(sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' YouTubeCast/install.xml | head -1)"
           test -n "$UNIFIED_VERSION"
           test -n "$LOGO_VERSION"
+          test -n "$YOUTUBECAST_VERSION"
           echo "unified=$UNIFIED_VERSION" >> "$GITHUB_OUTPUT"
           echo "logo=$LOGO_VERSION" >> "$GITHUB_OUTPUT"
+          echo "youtube_cast=$YOUTUBECAST_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Build plugin ZIPs and SHA-1
         id: package
@@ -40,26 +44,34 @@ jobs:
           set -euo pipefail
           UNIFIED_VERSION="${{ steps.version.outputs.unified }}"
           LOGO_VERSION="${{ steps.version.outputs.logo }}"
+          YOUTUBECAST_VERSION="${{ steps.version.outputs.youtube_cast }}"
           mkdir -p dist
           test -f UnifiedSearch/Plugin.pm
           test -f UnifiedSearch/install.xml
           test -f DefaultLogoHome/Plugin.pm
           test -f DefaultLogoHome/install.xml
+          test -f YouTubeCast/Plugin.pm
+          test -f YouTubeCast/install.xml
           zip -r "dist/UnifiedSearch-${UNIFIED_VERSION}.zip" UnifiedSearch
           zip -r "dist/DefaultLogoHome-${LOGO_VERSION}.zip" DefaultLogoHome
+          zip -r "dist/YouTubeCast-${YOUTUBECAST_VERSION}.zip" YouTubeCast
           echo "unified_sha=$(sha1sum "dist/UnifiedSearch-${UNIFIED_VERSION}.zip" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
           echo "logo_sha=$(sha1sum "dist/DefaultLogoHome-${LOGO_VERSION}.zip" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "youtube_cast_sha=$(sha1sum "dist/YouTubeCast-${YOUTUBECAST_VERSION}.zip" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Generate repository XML
         shell: bash
         run: |
           UNIFIED_VERSION="${{ steps.version.outputs.unified }}"
           LOGO_VERSION="${{ steps.version.outputs.logo }}"
+          YOUTUBECAST_VERSION="${{ steps.version.outputs.youtube_cast }}"
           sed \
             -e "s/UNIFIED_VERSION/${UNIFIED_VERSION}/g" \
             -e "s/LOGO_VERSION/${LOGO_VERSION}/g" \
+            -e "s/YOUTUBECAST_VERSION/${YOUTUBECAST_VERSION}/g" \
             -e "s/GENERATED_UNIFIED_SHA1/${{ steps.package.outputs.unified_sha }}/" \
             -e "s/GENERATED_LOGO_SHA1/${{ steps.package.outputs.logo_sha }}/" \
+            -e "s/GENERATED_YOUTUBECAST_SHA1/${{ steps.package.outputs.youtube_cast_sha }}/" \
             repo.xml.in > repo.xml
 
       - name: Commit repository metadata to main
@@ -84,3 +96,4 @@ jobs:
           files: |
             dist/UnifiedSearch-${{ steps.version.outputs.unified }}.zip
             dist/DefaultLogoHome-${{ steps.version.outputs.logo }}.zip
+            dist/YouTubeCast-${{ steps.version.outputs.youtube_cast }}.zip

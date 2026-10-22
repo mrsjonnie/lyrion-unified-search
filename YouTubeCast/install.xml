@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension>
+    <name>PLUGIN_YOUTUBECAST</name>
+    <creator>mrsjonnie</creator>
+    <defaultState>enabled</defaultState>
+    <description>Starts YouTube videos on a configured Google Cast device when an LMS YouTube track starts.</description>
+    <category>interface</category>
+    <id>c6ef34c4-ef6a-47b4-95a7-d62dfc486b6b</id>
+    <module>Plugins::YouTubeCast::Plugin</module>
+    <targetApplication>
+        <id>SqueezeCenter</id>
+        <minVersion>8.0</minVersion>
+        <maxVersion>*</maxVersion>
+    </targetApplication>
+    <type>2</type>
+    <version>0.1.0</version>
+</extension>

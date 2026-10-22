@@ -2,15 +2,16 @@ package Plugins::UnifiedSearch::Plugin;
 
 use strict;
 use warnings;
-use base qw(Slim::Plugin::Base);
+use base qw(Slim::Plugin::OPMLBased);
 
 use URI::Escape qw(uri_escape_utf8);
-use Slim::Menu::BrowseLibrary;
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
 use Slim::Utils::Network;
+use Slim::Utils::PluginManager;
+use Slim::Utils::Strings qw(string);
 
-our $VERSION = '0.2.0';
+our $VERSION = '0.3.1';
 
 my $enabled = 0;
 
@@ -22,11 +23,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 
 sub initPlugin {
     my $class = shift;
-    $enabled = 1;
-
-    # Keep these messages at WARN temporarily so they are visible with the
-    # default LMS logging level. They confirm whether LMS loads this module.
-    $log->warn("UnifiedSearch v$VERSION initPlugin called");
+    $enabled = 0;
 
     my $registered = eval {
         Slim::Menu::GlobalSearch->registerInfoProvider(
@@ -43,6 +40,8 @@ sub initPlugin {
         return;
     }
 
+    $enabled = 1;
+
     if (main::WEBUI) {
         require Slim::Web::Pages;
         Slim::Web::Pages->addPageFunction('plugins/UnifiedSearch/search.html', sub {
@@ -55,31 +54,38 @@ sub initPlugin {
             'PLUGIN_UNIFIEDSEARCH' => 'plugins/UnifiedSearch/search.html',
         });
 
-        my $modeRegistered = Slim::Menu::BrowseLibrary->registerNode({
-            type   => 'link',
-            name   => 'PLUGIN_UNIFIEDSEARCH',
-            id     => 'myMusicUnifiedSearch',
-            params => { mode => 'unifiedsearch' },
-            feed   => \&unifiedSearchMode,
-            weight => 100,
-        });
-        $log->error('UnifiedSearch could not register Material Applications menu entry')
-            unless $modeRegistered;
     }
 
-    $log->warn('UnifiedSearch registered Global Search provider');
+    $class->SUPER::initPlugin(
+        feed   => \&applicationFeed,
+        tag    => 'unifiedsearch',
+        is_app => 1,
+        type   => 'link',
+        weight => 100,
+    );
+
+    $log->debug('UnifiedSearch registered Global Search provider');
 }
 
-sub unifiedSearchMode {
+sub applicationFeed {
     my ($client, $callback) = @_;
-
     $callback->({
-        items => [{
-            name => 'PLUGIN_UNIFIEDSEARCH',
-            type => 'link',
-            url  => Slim::Utils::Network::serverURL() . '/Default/plugins/UnifiedSearch/search.html',
-        }],
+        items => $enabled ? [{
+            name => string('PLUGIN_UNIFIEDSEARCH'),
+            type => 'search',
+            url  => \&applicationSearchFeed,
+        }] : [],
     });
+}
+
+sub applicationSearchFeed {
+    my ($client, $callback, $args) = @_;
+    return $callback->({ items => [] }) unless $enabled;
+
+    my $query = $args && $args->{search} // '';
+    my $items = searchInfoMenu($client, { search => $query });
+
+    $callback->({ items => $items || [] });
 }
 
 sub getDisplayName {
@@ -89,16 +95,14 @@ sub getDisplayName {
 sub searchInfoMenu {
     my ($client, $tags) = @_;
 
-    $log->warn('UnifiedSearch searchInfoMenu called');
-
-    my $query = $tags->{search} // '';
+    my $query = $tags && $tags->{search} // '';
     return unless length $query;
 
     my @items;
     my $escaped = uri_escape_utf8($query);
 
     push @items, {
-        name      => 'Local library',
+        name      => string('PLUGIN_UNIFIEDSEARCH_LOCAL'),
         type      => 'link',
         url       => Slim::Utils::Network::serverURL() . '/search.html?ajaxSearch=1&q=' . $escaped,
         cachetime => 0,
@@ -106,24 +110,26 @@ sub searchInfoMenu {
 
     # SpotOn is optional. Keep the local-library result even if SpotOn
     # cannot be loaded or its search callback is unavailable.
-    my $loaded = eval { require Plugins::SpotOn::Plugin; 1 };
-    if (!$loaded) {
-        $log->warn('SpotOn search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
-    }
-    elsif (Plugins::SpotOn::Plugin->can('_searchFromHistoryFeed')) {
-        push @items, {
-            name        => 'Spotify (SpotOn)',
-            type        => 'link',
-            url         => \&Plugins::SpotOn::Plugin::_searchFromHistoryFeed,
-            passthrough => [{ query => $query }],
-            cachetime   => 0,
-        };
-    }
-    else {
-        $log->warn('SpotOn search unavailable: _searchFromHistoryFeed callback not found');
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::SpotOn::Plugin')) {
+        my $loaded = eval { require Plugins::SpotOn::Plugin; 1 };
+        if (!$loaded) {
+            $log->warn('SpotOn search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
+        }
+        elsif (Plugins::SpotOn::Plugin->can('_searchFromHistoryFeed')) {
+            push @items, {
+                name        => string('PLUGIN_UNIFIEDSEARCH_SPOTON'),
+                type        => 'link',
+                url         => \&Plugins::SpotOn::Plugin::_searchFromHistoryFeed,
+                passthrough => [{ query => $query }],
+                cachetime   => 0,
+            };
+        }
+        else {
+            $log->warn('SpotOn search unavailable: _searchFromHistoryFeed callback not found');
+        }
     }
 
-    $log->warn('UnifiedSearch returning ' . scalar(@items) . ' search item(s)');
+    $log->debug('UnifiedSearch returning ' . scalar(@items) . ' search item(s)');
     return @items ? \@items : undef;
 }
 
@@ -131,9 +137,12 @@ sub shutdownPlugin {
     $enabled = 0;
     Slim::Menu::GlobalSearch->deregisterInfoProvider('unifiedsearch');
     if (main::WEBUI) {
-        Slim::Menu::BrowseLibrary->deregisterNode('myMusicUnifiedSearch');
         Slim::Web::Pages->delPageLinks('browse', 'PLUGIN_UNIFIEDSEARCH');
+        Slim::Web::Pages->delPageLinks('apps', 'PLUGIN_UNIFIEDSEARCH');
     }
+
+    my $apps = Slim::Plugin::Base->nonSNApps();
+    @$apps = grep { $_ ne __PACKAGE__ } @$apps if $apps;
 }
 
 1;
