@@ -28,12 +28,12 @@
         </plugin>
         <plugin
             name="DefaultLogoHome"
-            version="0.1.1"
+            version="LOGO_VERSION"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
             sha="GENERATED_LOGO_SHA1"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/vUNIFIED_VERSION/DefaultLogoHome-0.1.1.zip"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/vUNIFIED_VERSION/DefaultLogoHome-LOGO_VERSION.zip"
             category="interface"
             creator="mrsjonnie"
         >

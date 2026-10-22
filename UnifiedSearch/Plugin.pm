@@ -7,8 +7,9 @@ use base qw(Slim::Plugin::Base);
 use URI::Escape qw(uri_escape_utf8);
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
+use Slim::Utils::Network;
 
-our $VERSION = '0.1.7';
+our $VERSION = '0.1.8';
 
 my $log = Slim::Utils::Log->addLogCategory({
     category     => 'plugin.unifiedsearch',
@@ -26,7 +27,7 @@ sub initPlugin {
     my $registered = eval {
         Slim::Menu::GlobalSearch->registerInfoProvider(
             unifiedsearch => (
-                after => 'middle',
+                isa   => 'middle',
                 func  => \&searchInfoMenu,
             )
         );
@@ -59,7 +60,7 @@ sub searchInfoMenu {
     push @items, {
         name      => 'Local library',
         type      => 'link',
-        url       => 'http://192.168.178.99:9001/search.html?ajaxSearch=1&q=' . $escaped,
+        url       => Slim::Utils::Network::serverURL() . '/search.html?ajaxSearch=1&q=' . $escaped,
         cachetime => 0,
     };
 

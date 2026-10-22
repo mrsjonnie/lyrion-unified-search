@@ -14,7 +14,7 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 - LMS 8.0 or newer.
 - SpotOn is optional; the Spotify entry appears only when Plugins::SpotOn::Plugin is enabled and its existing search callback is available.
-- The local-library URL currently targets http://192.168.178.99:9001, the LMS address used for this installation. Change it if LMS is hosted elsewhere.
+- The local-library URL is built from LMS's configured server address and HTTP port; it does not depend on a hard-coded installation address.
 - YouTube's own provider is not duplicated by this plugin.
 
 ## Install
@@ -31,6 +31,8 @@ Click **Apply**, install **Lyrion Unified Search**, and restart LMS if requested
 - Repository template: repo.xml.in
 - Release workflow: .github/workflows/release.yml
 
-The GitHub Actions workflow packages both add-ons, calculates their SHA-1 hashes, updates repo.xml, and publishes the version declared in UnifiedSearch/install.xml. Bump that version before publishing a new release.
+The GitHub Actions workflow packages both add-ons using the versions in their respective `install.xml` files, calculates their SHA-1 hashes, updates `repo.xml`, and publishes a release tagged with the UnifiedSearch version. Bump the version of each changed add-on before publishing a new release.
+
+Disabling either add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider; Default Logo Home stops injecting its logo-link override.
 
 The package still needs an end-to-end check on the target LMS/Material Skin installation. In particular, confirm that the Spotify entry appears in Material Skin and opens SpotOn's search results.
