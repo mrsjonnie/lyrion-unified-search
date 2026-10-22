@@ -3,7 +3,7 @@
     <name>Lyrion Unified Search</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Adds local-library and SpotOn Spotify results to LMS Global Search in Default and Material skins.</description>
+    <description>Adds Unified Search to the Applications menu and includes local-library and SpotOn results.</description>
     <category>musicservices</category>
     <id>2c03f0a2-8b53-4f4d-a171-5d2b5c1b91a7</id>
     <module>Plugins::UnifiedSearch::Plugin</module>
@@ -13,5 +13,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.1.9</version>
+    <version>0.2.0</version>
 </extension>

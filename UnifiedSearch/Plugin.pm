@@ -5,11 +5,12 @@ use warnings;
 use base qw(Slim::Plugin::Base);
 
 use URI::Escape qw(uri_escape_utf8);
+use Slim::Menu::BrowseLibrary;
 use Slim::Menu::GlobalSearch;
 use Slim::Utils::Log;
 use Slim::Utils::Network;
 
-our $VERSION = '0.1.9';
+our $VERSION = '0.2.0';
 
 my $enabled = 0;
 
@@ -53,9 +54,32 @@ sub initPlugin {
         Slim::Web::Pages->addPageLinks('browse', {
             'PLUGIN_UNIFIEDSEARCH' => 'plugins/UnifiedSearch/search.html',
         });
+
+        my $modeRegistered = Slim::Menu::BrowseLibrary->registerNode({
+            type   => 'link',
+            name   => 'PLUGIN_UNIFIEDSEARCH',
+            id     => 'myMusicUnifiedSearch',
+            params => { mode => 'unifiedsearch' },
+            feed   => \&unifiedSearchMode,
+            weight => 100,
+        });
+        $log->error('UnifiedSearch could not register Material Applications menu entry')
+            unless $modeRegistered;
     }
 
     $log->warn('UnifiedSearch registered Global Search provider');
+}
+
+sub unifiedSearchMode {
+    my ($client, $callback) = @_;
+
+    $callback->({
+        items => [{
+            name => 'PLUGIN_UNIFIEDSEARCH',
+            type => 'link',
+            url  => Slim::Utils::Network::serverURL() . '/Default/plugins/UnifiedSearch/search.html',
+        }],
+    });
 }
 
 sub getDisplayName {
@@ -106,7 +130,10 @@ sub searchInfoMenu {
 sub shutdownPlugin {
     $enabled = 0;
     Slim::Menu::GlobalSearch->deregisterInfoProvider('unifiedsearch');
-    Slim::Web::Pages->delPageLinks('browse', 'PLUGIN_UNIFIEDSEARCH') if main::WEBUI;
+    if (main::WEBUI) {
+        Slim::Menu::BrowseLibrary->deregisterNode('myMusicUnifiedSearch');
+        Slim::Web::Pages->delPageLinks('browse', 'PLUGIN_UNIFIEDSEARCH');
+    }
 }
 
 1;
