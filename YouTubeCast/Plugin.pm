@@ -11,6 +11,7 @@ use Slim::Utils::Log;
 use Slim::Utils::OSDetect;
 use Slim::Utils::Prefs;
 use Slim::Player::Playlist;
+use Slim::Schema;
 
 my $prefs = preferences('plugin.youtubecast');
 my $log = Slim::Utils::Log->addLogCategory({
@@ -36,11 +37,15 @@ sub initPlugin {
         Plugins::YouTubeCast::Settings->new;
     }
 
-    Slim::Control::Request::subscribe(\&_onNewSong, [['playlist'], ['newsong']]);
+    Slim::Control::Request::subscribe(\&_onPlaylistControl, [['playlistcontrol']]);
+    Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['play', 'load']]);
+    Slim::Control::Request::subscribe(\&_onPlaylistJump, [['playlist'], ['jump']]);
 }
 
 sub shutdownPlugin {
-    Slim::Control::Request::unsubscribe(\&_onNewSong);
+    Slim::Control::Request::unsubscribe(\&_onPlaylistControl);
+    Slim::Control::Request::unsubscribe(\&_onPlaylistPlay);
+    Slim::Control::Request::unsubscribe(\&_onPlaylistJump);
     for my $worker (@workers) {
         $worker->die if $worker && $worker->alive;
     }
@@ -51,8 +56,67 @@ sub getDisplayName {
     return 'PLUGIN_YOUTUBECAST';
 }
 
-sub _onNewSong {
+sub _onPlaylistControl {
     my ($request) = @_;
+    return unless ($request->getParam('cmd') || '') =~ /\A(?:load|play)\z/;
+
+    my $url = _requestTrackUrl($request, 'track_id', 'url');
+    _startCastForUrl($url);
+}
+
+sub _onPlaylistPlay {
+    my ($request) = @_;
+    my $url = _requestTrackUrl($request, '_item', 'url');
+    _startCastForUrl($url);
+}
+
+sub _onPlaylistJump {
+    my ($request) = @_;
+    my $client = $request->client or return;
+    my $index = $request->getParam('_index');
+    $index = $request->getParam('index') unless defined $index;
+    return unless defined $index && $index =~ /\A\d+\z/;
+
+    my $track = Slim::Player::Playlist::track($client, $index) or return;
+    _startCastForUrl($track->url);
+}
+
+sub _requestTrackUrl {
+    my ($request, @params) = @_;
+
+    for my $param (@params) {
+        my $value = $request->getParam($param);
+        next unless defined $value;
+
+        if (ref $value && eval { $value->can('url') }) {
+            my $url = $value->url || '';
+            return $url if _youtubeVideoId($url);
+            next;
+        }
+
+        if ($param eq 'track_id' && $value =~ /\A\d+(?:,\d+)*\z/) {
+            for my $trackId (split /,/, $value) {
+                my $track = Slim::Schema->find('Track', $trackId);
+                my $url = $track && $track->url;
+                return $url if $url && _youtubeVideoId($url);
+            }
+            next;
+        }
+
+        return $value if _youtubeVideoId($value);
+
+        if ($value =~ /\A\d+\z/) {
+            my $track = Slim::Schema->find('Track', $value);
+            my $url = $track && $track->url;
+            return $url if $url && _youtubeVideoId($url);
+        }
+    }
+
+    return '';
+}
+
+sub _startCastForUrl {
+    my ($url) = @_;
     return unless $prefs->get('enabled');
 
     my $host = $prefs->get('target_host') || '';
@@ -70,13 +134,9 @@ sub _onNewSong {
         return;
     }
 
-    my $client = $request->client;
-    return unless $client;
-
-    my $url = Slim::Player::Playlist::url($client) || '';
     my $videoId = _youtubeVideoId($url);
     unless ($videoId) {
-        $log->debug("Playback started for non-YouTube track: $url");
+        $log->debug("Play request is not a YouTube track: $url");
         return;
     }
 
