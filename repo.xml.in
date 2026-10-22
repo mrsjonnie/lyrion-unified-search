@@ -1,22 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    LMS custom repository descriptor for Lyrion Unified Search.
+
+    Add the published raw URL in LMS Settings > Plugins > Additional Repositories:
+    https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
+
+    The release workflow fills in the version, release URL and SHA-1 digest.
+-->
 <extensions>
-  <details>
-    <title lang="EN">Lyrion Unified Search</title>
-    <title lang="NL">Lyrion Unified Search</title>
-    <description lang="EN">A standalone grouped search entry for LMS local search, YouTube and SpotOn.</description>
-    <description lang="NL">Een zelfstandige zoekingang voor LMS, YouTube en SpotOn.</description>
-  </details>
-  <plugins>
-    <plugin name="UnifiedSearch" version="0.1.0" minTarget="8.0">
-      <title lang="EN">Lyrion Unified Search</title>
-      <title lang="NL">Lyrion Unified Search</title>
-      <desc lang="EN">Grouped search entry for the LMS web library search, YouTube and SpotOn.</desc>
-      <desc lang="NL">Gecombineerde zoekingang voor de LMS-bibliotheek, YouTube en SpotOn.</desc>
-      <creator>mrsjonnie</creator>
-      <categorycode>musicservices</categorycode>
-      <url>https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.0/UnifiedSearch-0.1.0.zip</url>
-      <sha>GENERATED_BY_RELEASE_WORKFLOW</sha>
-      <link>https://github.com/mrsjonnie/lyrion-unified-search</link>
-    </plugin>
-  </plugins>
+    <details>
+        <title lang="EN">Lyrion Unified Search Repository</title>
+        <title lang="NL">Lyrion Unified Search Repository</title>
+    </details>
+    <plugins>
+        <plugin
+            name="UnifiedSearch"
+            version="0.1.0"
+            target="unix|mac|windows"
+            minTarget="8.0"
+            maxTarget="*"
+            sha="GENERATED_BY_RELEASE_WORKFLOW"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.0/UnifiedSearch-0.1.0.zip"
+            category="musicservices"
+            creator="mrsjonnie"
+        >
+            <title lang="EN">Lyrion Unified Search</title>
+            <title lang="NL">Lyrion Unified Search</title>
+            <desc lang="EN">Grouped search entry for the LMS library, YouTube and SpotOn</desc>
+            <desc lang="NL">Gecombineerde zoekingang voor de LMS-bibliotheek, YouTube en SpotOn</desc>
+        </plugin>
+    </plugins>
 </extensions>
