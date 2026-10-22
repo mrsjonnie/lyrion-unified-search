@@ -8,4 +8,13 @@
     <input type="text" class="stdedit" name="pref_target_host" id="pref_target_host" value="[% prefs.pref_target_host | html %]" size="40">
 [% END %]
 
+[% WRAPPER setting title="PLUGIN_YOUTUBECAST_PLAYER_HOSTS" desc="PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC" %]
+    <textarea class="stdedit" name="pref_host_mappings" id="pref_host_mappings" rows="6" cols="50">[% prefs.pref_host_mappings | html %]</textarea>
+    <ul>
+        [% FOREACH player IN youtubecastPlayers %]
+            <li>[% player.name | html %] (<code>[% player.id | html %]</code>)</li>
+        [% END %]
+    </ul>
+[% END %]
+
 [% PROCESS settings/footer.html %]

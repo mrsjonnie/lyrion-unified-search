@@ -10,7 +10,7 @@ use Slim::Utils::PluginManager;
 use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json);
 
-our $VERSION = '0.3.4';
+our $VERSION = '0.3.5';
 
 my $enabled = 0;
 
@@ -90,7 +90,7 @@ sub applicationSearchFeed {
         my ($sources) = @_;
         my @items;
 
-        for my $source (qw(local youtube spotty spoton)) {
+        for my $source (qw(local youtube spotty spoton deezer qobuz)) {
             my $result = $sources->{$source};
             next unless $result;
             for my $hit (@{ $result->{items} || [] }) {
@@ -184,6 +184,36 @@ sub _searchTopArtists {
         }
         elsif (!$loaded) {
             $log->warn('SpotOn live search unavailable: ' . ($@ || 'could not load plugin'));
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::Deezer::Plugin')) {
+        my $loaded = eval { require Plugins::Deezer::Plugin; 1 };
+        if ($loaded && Plugins::Deezer::Plugin->can('search')) {
+            push @searches, {
+                key         => 'deezer',
+                name        => string('PLUGIN_UNIFIEDSEARCH_DEEZER'),
+                handler     => \&deezerSearchFeed,
+                passthrough => { query => $query },
+            };
+        }
+        elsif (!$loaded) {
+            $log->warn('Deezer live search unavailable: ' . ($@ || 'could not load plugin'));
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::Qobuz::Plugin')) {
+        my $loaded = eval { require Plugins::Qobuz::Plugin; 1 };
+        if ($loaded && Plugins::Qobuz::Plugin->can('QobuzSearch')) {
+            push @searches, {
+                key         => 'qobuz',
+                name        => string('PLUGIN_UNIFIEDSEARCH_QOBUZ'),
+                handler     => \&qobuzSearchFeed,
+                passthrough => { query => $query },
+            };
+        }
+        elsif (!$loaded) {
+            $log->warn('Qobuz live search unavailable: ' . ($@ || 'could not load plugin'));
         }
     }
 
@@ -324,6 +354,46 @@ sub searchInfoMenu {
         }
     }
 
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::Deezer::Plugin')) {
+        my $loaded = eval { require Plugins::Deezer::Plugin; 1 };
+        if (!$loaded) {
+            $log->warn('Deezer search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
+        }
+        elsif (Plugins::Deezer::Plugin->can('search')) {
+            push @items, {
+                name        => string('PLUGIN_UNIFIEDSEARCH_DEEZER'),
+                icon        => 'html/images/search.png',
+                type        => 'link',
+                url         => \&deezerSearchFeed,
+                passthrough => [{ query => $query }],
+                cachetime   => 0,
+            };
+        }
+        else {
+            $log->warn('Deezer artist search unavailable: search callback not found');
+        }
+    }
+
+    if (Slim::Utils::PluginManager->isEnabled('Plugins::Qobuz::Plugin')) {
+        my $loaded = eval { require Plugins::Qobuz::Plugin; 1 };
+        if (!$loaded) {
+            $log->warn('Qobuz search unavailable: could not load plugin: ' . ($@ || 'unknown error'));
+        }
+        elsif (Plugins::Qobuz::Plugin->can('QobuzSearch')) {
+            push @items, {
+                name        => string('PLUGIN_UNIFIEDSEARCH_QOBUZ'),
+                icon        => 'html/images/search.png',
+                type        => 'link',
+                url         => \&qobuzSearchFeed,
+                passthrough => [{ query => $query }],
+                cachetime   => 0,
+            };
+        }
+        else {
+            $log->warn('Qobuz artist search unavailable: QobuzSearch callback not found');
+        }
+    }
+
     $log->debug('UnifiedSearch returning ' . scalar(@items) . ' search item(s)');
     return @items ? \@items : undef;
 }
@@ -386,6 +456,35 @@ sub spotonSearchFeed {
         _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_SPOTON'), 3),
         \%search_args,
         { query => $query, type => 'artist' },
+    );
+}
+
+sub deezerSearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    my %search_args = $args ? %{$args} : ();
+    $search_args{search} = $query;
+    $search_args{quantity} = 3;
+
+    Plugins::Deezer::Plugin::search(
+        $client,
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_DEEZER'), 3),
+        \%search_args,
+        { type => 'artist' },
+    );
+}
+
+sub qobuzSearchFeed {
+    my ($client, $callback, $args, $passthrough) = @_;
+    my $query = $passthrough && $passthrough->{query} // '';
+    my %search_args = $args ? %{$args} : ();
+    $search_args{quantity} = 3;
+
+    Plugins::Qobuz::Plugin::QobuzSearch(
+        $client,
+        _resultsCallback($callback, string('PLUGIN_UNIFIEDSEARCH_QOBUZ'), 3),
+        \%search_args,
+        { q => $query, type => 'artists' },
     );
 }
 
