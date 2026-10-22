@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Live artist search showing three matches from every enabled source, including Deezer and Qobuz</desc>
-            <desc lang="NL">Live artiesten zoeken met drie resultaten per ingeschakelde bron, inclusief Deezer en Qobuz</desc>
+            <desc lang="EN">Live search with three results per source from music, Radio.net stations, podcasts, and TIDAL</desc>
+            <desc lang="NL">Live zoeken met drie resultaten per bron uit muziek, Radio.net-zenders, podcasts en TIDAL</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -55,8 +55,8 @@
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Casts original YouTube videos to the Chromecast assigned to the selected LMS player</desc>
-            <desc lang="NL">Cast originele YouTube-video's naar de Chromecast die aan de geselecteerde LMS-speler is gekoppeld</desc>
+            <desc lang="EN">Starts the original video from the LMS Play request and routes it to the Chromecast assigned to the selected player</desc>
+            <desc lang="NL">Start de originele video vanuit de LMS-afspeelopdracht en cast naar de Chromecast van de geselecteerde speler</desc>
         </plugin>
     </plugins>
 </extensions>

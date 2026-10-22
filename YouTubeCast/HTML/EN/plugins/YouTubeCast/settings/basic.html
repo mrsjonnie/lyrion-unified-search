@@ -9,12 +9,31 @@
 [% END %]
 
 [% WRAPPER setting title="PLUGIN_YOUTUBECAST_PLAYER_HOSTS" desc="PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC" %]
-    <textarea class="stdedit" name="pref_host_mappings" id="pref_host_mappings" rows="6" cols="50">[% prefs.pref_host_mappings | html %]</textarea>
-    <ul>
+    [% IF youtubecastPlayers.size %]
+    <table class="browsingList">
+        <thead>
+            <tr>
+                <th>[% "PLUGIN_YOUTUBECAST_PLAYER" | string %]</th>
+                <th>[% "PLUGIN_YOUTUBECAST_HOST" | string %]</th>
+            </tr>
+        </thead>
+        <tbody>
         [% FOREACH player IN youtubecastPlayers %]
-            <li>[% player.name | html %] (<code>[% player.id | html %]</code>)</li>
+            <tr>
+                <td>
+                    [% player.name | html %]<br>
+                    <small>[% player.id | html %]</small>
+                </td>
+                <td>
+                    <input type="text" class="stdedit" name="cast_host_[% player.key | html %]" id="cast_host_[% player.key | html %]" value="[% player.host | html %]" size="40" placeholder="living-room-tv.local">
+                </td>
+            </tr>
         [% END %]
-    </ul>
+        </tbody>
+    </table>
+    [% ELSE %]
+        <p>[% "PLUGIN_YOUTUBECAST_NO_PLAYERS" | string %]</p>
+    [% END %]
 [% END %]
 
 [% PROCESS settings/footer.html %]
