@@ -23,8 +23,8 @@
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">LMS Unified Search application for Material Apps and Default Browse, including local library and SpotOn results</desc>
-            <desc lang="NL">LMS Unified Search-app voor Material Apps en Bladeren in Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
+            <desc lang="EN">Shows three artist matches per source from the local library, YouTube, Spotify, and SpotOn</desc>
+            <desc lang="NL">Toont drie artiesten per bron uit de lokale bibliotheek, YouTube, Spotify en SpotOn</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
