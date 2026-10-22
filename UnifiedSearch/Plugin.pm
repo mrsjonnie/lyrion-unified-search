@@ -105,7 +105,8 @@ sub _installMaterialSkinSearchHook {
     my $path = "$dir/custom.js";
     my $existing = '';
     if (-e $path) {
-        if (!open(my $in, '<', $path)) {
+        my $in;
+        if (!open($in, '<', $path)) {
             $log->warn("Could not read $path: $!");
             return;
         }
@@ -124,7 +125,8 @@ sub _installMaterialSkinSearchHook {
     $updated .= _materialSkinHook() . "\n";
 
     my $tmp = "$path.unifiedsearch.tmp";
-    if (!open(my $out, '>', $tmp)) {
+    my $out;
+    if (!open($out, '>', $tmp)) {
         $log->warn("Could not write temporary Material Skin hook $tmp: $!");
         return;
     }
@@ -150,7 +152,8 @@ sub _removeMaterialSkinSearchHook {
     my $path = "$prefs_dir/material-skin/custom.js";
     return unless -e $path;
 
-    if (!open(my $in, '<', $path)) {
+    my $in;
+    if (!open($in, '<', $path)) {
         $log->warn("Could not read $path to remove Material Skin hook: $!");
         return;
     }
