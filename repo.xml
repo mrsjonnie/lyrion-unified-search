@@ -16,15 +16,15 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="bf43784f8fda6cc4e6666fcdfcfec3096bd8eff6"
+            sha="a96f3ad8ea88eccb6704c8f5220ed02de24d2677"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/UnifiedSearch-0.3.4.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Three artist matches per source; includes automatic YouTube Chromecast casting</desc>
-            <desc lang="NL">Drie artiesten per bron; bevat automatisch YouTube casten naar Chromecast</desc>
+            <desc lang="EN">Live search showing three artist matches per available source</desc>
+            <desc lang="NL">Live zoeken met drie artiesten per beschikbare bron</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -32,7 +32,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="084e4b7bc33849f3919e6c20ec759725998b0065"
+            sha="a0f33086f58f3bec1ef569f5bbbb1d55a232a640"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
@@ -48,7 +48,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="a9c81798e1d4aa6ab4711b164dc5f11ff9703557"
+            sha="8b2f6e3700b0655a619a755e7363a0cb3d88d6dd"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.4/YouTubeCast-0.1.1.zip"
             category="interface"
             creator="mrsjonnie"
