@@ -12,19 +12,19 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.2.0"
+            version="0.3.1"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="8e280cc597077e3e5f85198753b4326664c01c16"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.2.0/UnifiedSearch-0.2.0.zip"
+            sha="45bcc527aaf83fef22e874db9ed69516973b9841"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.1/UnifiedSearch-0.3.1.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Unified Search entry in Material Applications and Default Browse menus, with local library and SpotOn results</desc>
-            <desc lang="NL">Unified Search in Toepassingen van Material en in Bladeren van Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
+            <desc lang="EN">LMS Unified Search application for Material Apps and Default Browse, including local library and SpotOn results</desc>
+            <desc lang="NL">LMS Unified Search-app voor Material Apps en Bladeren in Default, met resultaten uit de lokale bibliotheek en SpotOn</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -32,8 +32,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="353fc4efc030657b316bef6dc1ff1d54234b7ec7"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.2.0/DefaultLogoHome-0.1.5.zip"
+            sha="b79bc9a9cd7cc9bc3f81d7e29547022648ba9a60"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.1/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
         >
@@ -41,6 +41,22 @@
             <title lang="NL">Default-logo → LMS-startpagina</title>
             <desc lang="EN">Makes the Lyrion logo in the Default skin open the LMS home page</desc>
             <desc lang="NL">Laat het Lyrion-logo in de Default-skin de LMS-startpagina openen</desc>
+        </plugin>
+        <plugin
+            name="YouTubeCast"
+            version="0.1.0"
+            target="unix|mac|windows"
+            minTarget="8.0"
+            maxTarget="*"
+            sha="2b0fddecfdd19c570d7fea3c17b13f4e20f931c3"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.1/YouTubeCast-0.1.0.zip"
+            category="interface"
+            creator="mrsjonnie"
+        >
+            <title lang="EN">YouTube Cast for Chromecast</title>
+            <title lang="NL">YouTube Cast voor Chromecast</title>
+            <desc lang="EN">Starts the native YouTube app on a configured Google Cast device when an LMS YouTube track starts</desc>
+            <desc lang="NL">Start de native YouTube-app op een ingestelde Google Cast-tv wanneer een LMS-YouTube-track begint</desc>
         </plugin>
     </plugins>
 </extensions>
