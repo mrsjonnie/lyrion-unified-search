@@ -12,12 +12,12 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.1.5"
+            version="0.1.6"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="fe757fba316bd5a3adef9ea1231d1d44a0342f03"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.5/UnifiedSearch-0.1.5.zip"
+            sha="a2d8dcc6e300cc0c2ff2b913c28b7d0e2129c498"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.6/UnifiedSearch-0.1.6.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
@@ -32,8 +32,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="48c6056c9104d66e08b1e4095ddd76468fd417a7"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.5/DefaultLogoHome-0.1.1.zip"
+            sha="683df1f7b4ff91fc856d05ee8de733b617efa0ed"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.1.6/DefaultLogoHome-0.1.1.zip"
             category="interface"
             creator="mrsjonnie"
         >
