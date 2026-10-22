@@ -112,7 +112,7 @@ sub searchFeed {
 
     $callback->({
         name  => 'Unified Search',
-        items => \\@items,
+        items => \@items,
     });
 }
 
