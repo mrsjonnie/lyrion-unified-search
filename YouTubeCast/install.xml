@@ -3,7 +3,7 @@
     <name>PLUGIN_YOUTUBECAST</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Starts casting from the original YouTube track as soon as LMS receives a play request.</description>
+    <description>Casts original YouTube videos to the Chromecast assigned to the selected LMS player.</description>
     <category>interface</category>
     <id>c6ef34c4-ef6a-47b4-95a7-d62dfc486b6b</id>
     <module>Plugins::YouTubeCast::Plugin</module>
@@ -13,5 +13,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
 </extension>

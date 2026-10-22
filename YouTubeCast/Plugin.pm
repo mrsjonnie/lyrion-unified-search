@@ -26,8 +26,9 @@ sub initPlugin {
     my $class = shift;
 
     $prefs->init({
-        enabled     => 0,
-        target_host => '',
+        enabled       => 0,
+        target_host   => '',
+        host_mappings => '',
     });
 
     $class->SUPER::initPlugin();
@@ -58,16 +59,16 @@ sub getDisplayName {
 
 sub _onPlaylistControl {
     my ($request) = @_;
-    return unless ($request->getParam('cmd') || '') =~ /\A(?:load|play)\z/;
+    return unless ($request->getParam('cmd') || '') eq 'load';
 
     my $url = _requestTrackUrl($request, 'track_id', 'url');
-    _startCastForUrl($url);
+    _startCastForUrl($request->client, $url);
 }
 
 sub _onPlaylistPlay {
     my ($request) = @_;
     my $url = _requestTrackUrl($request, '_item', 'url');
-    _startCastForUrl($url);
+    _startCastForUrl($request->client, $url);
 }
 
 sub _onPlaylistJump {
@@ -78,7 +79,7 @@ sub _onPlaylistJump {
     return unless defined $index && $index =~ /\A\d+\z/;
 
     my $track = Slim::Player::Playlist::track($client, $index) or return;
-    _startCastForUrl($track->url);
+    _startCastForUrl($client, $track->url);
 }
 
 sub _requestTrackUrl {
@@ -88,25 +89,27 @@ sub _requestTrackUrl {
         my $value = $request->getParam($param);
         next unless defined $value;
 
+        $value = $value->[0] if ref $value eq 'ARRAY' && @$value;
+        next if ref $value eq 'ARRAY';
+
         if (ref $value && eval { $value->can('url') }) {
             my $url = $value->url || '';
             return $url if _youtubeVideoId($url);
             next;
         }
 
-        if ($param eq 'track_id' && $value =~ /\A\d+(?:,\d+)*\z/) {
-            for my $trackId (split /,/, $value) {
-                my $track = Slim::Schema->find('Track', $trackId);
-                my $url = $track && $track->url;
-                return $url if $url && _youtubeVideoId($url);
-            }
+        if ($param eq 'track_id' && $value =~ /\A-?\d+(?:,-?\d+)*\z/) {
+            my ($trackId) = split /,/, $value;
+            my $track = _trackById($trackId);
+            my $url = $track && $track->url;
+            return $url if $url && _youtubeVideoId($url);
             next;
         }
 
         return $value if _youtubeVideoId($value);
 
-        if ($value =~ /\A\d+\z/) {
-            my $track = Slim::Schema->find('Track', $value);
+        if ($value =~ /\A-?\d+\z/) {
+            my $track = _trackById($value);
             my $url = $track && $track->url;
             return $url if $url && _youtubeVideoId($url);
         }
@@ -115,15 +118,23 @@ sub _requestTrackUrl {
     return '';
 }
 
+sub _trackById {
+    my ($trackId) = @_;
+    return Slim::Schema->find('Track', $trackId) if $trackId >= 0;
+
+    require Slim::Schema::RemoteTrack;
+    return Slim::Schema::RemoteTrack->fetchById($trackId);
+}
+
 sub _startCastForUrl {
-    my ($url) = @_;
+    my ($client, $url) = @_;
     return unless $prefs->get('enabled');
 
-    my $host = $prefs->get('target_host') || '';
+    my $host = _castHostForClient($client);
     $host =~ s/^\s+|\s+$//g;
     unless (length $host) {
         unless ($warnedMissingHost) {
-            $log->warn('Automatic YouTube casting is enabled, but no Chromecast host is configured');
+            $log->warn('Automatic YouTube casting is enabled, but no Chromecast host is configured for this player');
             $warnedMissingHost = 1;
         }
         return;
@@ -165,7 +176,36 @@ sub _startCastForUrl {
 
     @workers = grep { $_ && $_->alive } @workers;
     push @workers, $worker;
-    $log->info("Started Chromecast YouTube cast for video $videoId");
+    my $playerName = $client && ($client->name || $client->id) || 'unknown LMS player';
+    $log->info("Started Chromecast YouTube cast for video $videoId on $playerName ($host)");
+}
+
+sub _castHostForClient {
+    my ($client) = @_;
+    my $clientId = $client && $client->id;
+    my $clientName = $client && $client->name;
+    my $mappings = $prefs->get('host_mappings') || '';
+    my @entries;
+
+    for my $line (split /[\r\n]+/, $mappings) {
+        next if $line =~ /^\s*(?:#|$)/;
+        my ($key, $host) = split /\s*=\s*/, $line, 2;
+        next unless defined $host;
+        $key =~ s/^\s+|\s+$//g;
+        $host =~ s/^\s+|\s+$//g;
+        push @entries, [$key, $host];
+    }
+
+    for my $entry (@entries) {
+        return $entry->[1] if $clientId && $entry->[0] eq $clientId;
+    }
+
+    for my $entry (@entries) {
+        return $entry->[1]
+            if $clientName && lc($entry->[0]) eq lc($clientName);
+    }
+
+    return $prefs->get('target_host') || '';
 }
 
 sub _validHost {
@@ -176,7 +216,8 @@ sub _validHost {
 sub _youtubeVideoId {
     my ($url) = @_;
 
-    return $1 if $url =~ m{(?:youtube\.com/(?:watch\?[^#]*?\bv=|embed/|v/|shorts/|live/)|youtu\.be/)([A-Za-z0-9_-]{11})(?:[?&#]|\z)}i;
+    return $1 if $url =~ m{(?:youtube://(?:https?://)?|https?://)?(?:(?:www|m|music)\.)?youtube\.com/(?:watch\?[^#]*?\bv=|embed/|v/|shorts/|live/)([A-Za-z0-9_-]{11})(?:[?&#]|\z)}i;
+    return $1 if $url =~ m{(?:youtube://(?:https?://)?|https?://)?youtu\.be/([A-Za-z0-9_-]{11})(?:[?&#]|\z)}i;
     return $1 if $url =~ m{\Ayoutube://([A-Za-z0-9_-]{11})(?:[?&]|\z)}i;
 
     return;

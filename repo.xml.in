@@ -55,8 +55,8 @@
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Starts the original YouTube video when an LMS play request is made, without waiting for audio playback</desc>
-            <desc lang="NL">Start de originele YouTube-video bij een LMS-afspeelopdracht, zonder te wachten op audioweergave</desc>
+            <desc lang="EN">Casts original YouTube videos to the Chromecast assigned to the selected LMS player</desc>
+            <desc lang="NL">Cast originele YouTube-video's naar de Chromecast die aan de geselecteerde LMS-speler is gekoppeld</desc>
         </plugin>
     </plugins>
 </extensions>
