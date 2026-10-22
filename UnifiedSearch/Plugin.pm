@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.14';
+our $VERSION = '0.3.15';
 
 my $enabled = 0;
 
@@ -111,7 +111,7 @@ sub applicationSearchFeed {
 
                 my %item = %$hit;
                 $item{name} = $source eq 'bbcsounds'
-                    ? $name
+                    ? _bbcDisplayName($name)
                     : $result->{name} . ': ' . $name;
                 push @items, \%item;
             }
@@ -138,7 +138,12 @@ sub searchResultsHandler {
             $formatted{$source} = {
                 name  => $sources->{$source}{name},
                 error => $sources->{$source}{error},
-                items => [ map { _itemName($_) } @{ $sources->{$source}{items} || [] } ],
+                items => [
+                    map {
+                        my $name = _itemName($_);
+                        $source eq 'bbcsounds' ? _bbcDisplayName($name) : $name;
+                    } @{ $sources->{$source}{items} || [] }
+                ],
             };
         }
         my $json = encode_json({ sources => \%formatted });
@@ -314,6 +319,13 @@ sub _itemName {
     my ($item) = @_;
     return '' unless ref $item eq 'HASH';
     return $item->{name} || $item->{artist} || $item->{album} || $item->{title} || $item->{channel} || '';
+}
+
+sub _bbcDisplayName {
+    my ($name) = @_;
+    return '' unless defined $name && length $name;
+    $name =~ s/^\s*BBC:\s*//i;
+    return 'BBC: ' . $name;
 }
 
 sub getDisplayName {
@@ -610,7 +622,7 @@ sub bbcSoundsSearchFeed {
         my @items = map {
             if (ref $_ eq 'HASH') {
                 my $name = _itemName($_);
-                length($name) ? { %$_, name => 'BBC: ' . $name } : $_;
+                length($name) ? { %$_, name => _bbcDisplayName($name) } : $_;
             }
             else {
                 $_;
