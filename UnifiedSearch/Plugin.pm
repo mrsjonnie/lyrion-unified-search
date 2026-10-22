@@ -6,6 +6,8 @@ use base qw(Slim::Plugin::Base);
 
 use URI::Escape qw(uri_escape_utf8);
 use Slim::Utils::Strings qw(cstring);
+use Slim::Menu::GlobalSearch;
+use Slim::Utils::PluginManager;
 
 our $VERSION = '0.1.0';
 
@@ -34,14 +36,13 @@ sub searchInfoMenu {
 
     my @items;
 
-    # LMS's own web search is kept as the local-library destination. Escape the
-    # query as a URL component; do not modify the Default or Material Skin files.
+    # Keep the local-library destination on the user's LMS host. The query is
+    # escaped as a URL component; no Default or Material Skin files are changed.
     my $escaped = uri_escape_utf8($query);
     push @items, {
         name => cstring($client, 'PLUGIN_UNIFIEDSEARCH_LOCAL'),
         type => 'link',
-        url  => 'http://127.0.0.1:' . (main::HTTP_PORT() || 9000)
-              . '/search.html?ajaxSearch=1&q=' . $escaped,
+        url  => 'http://192.168.178.99:9001/search.html?ajaxSearch=1&q=' . $escaped,
     };
 
     # YouTube already exposes a GlobalSearch provider. This entry makes the
