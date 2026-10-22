@@ -1,0 +1,68 @@
+name: Package LMS plugin release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive version
+        id: version
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build plugin ZIP and SHA-1
+        id: package
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p dist
+          test -f UnifiedSearch/Plugin.pm
+          (cd UnifiedSearch && zip -r "../dist/UnifiedSearch-$VERSION.zip" .)
+          SHA1="$(sha1sum "dist/UnifiedSearch-$VERSION.zip" | cut -d' ' -f1)"
+          echo "sha1=$SHA1" >> "$GITHUB_OUTPUT"
+          echo "zip=dist/UnifiedSearch-$VERSION.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Generate repository XML
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          SHA1="${{ steps.package.outputs.sha1 }}"
+          sed             -e "s/version=\"0.1.0\"/version=\"$VERSION\"/"             -e "s|releases/download/v0.1.0/UnifiedSearch-0.1.0.zip|releases/download/v$VERSION/UnifiedSearch-$VERSION.zip|"             -e "s/GENERATED_BY_RELEASE_WORKFLOW/$SHA1/"             repo.xml.in > repo.xml
+
+      - name: Commit repository metadata to main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          cp repo.xml.in /tmp/repo.xml.in
+          VERSION="${{ steps.version.outputs.version }}"
+          SHA1="${{ steps.package.outputs.sha1 }}"
+          sed             -e "s/version=\"0.1.0\"/version=\"$VERSION\"/"             -e "s|releases/download/v0.1.0/UnifiedSearch-0.1.0.zip|releases/download/v$VERSION/UnifiedSearch-$VERSION.zip|"             -e "s/GENERATED_BY_RELEASE_WORKFLOW/$SHA1/"             /tmp/repo.xml.in > repo.xml
+          git add repo.xml
+          git commit -m "Publish LMS repository metadata for v$VERSION" || true
+          git push origin main
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Unified Search v${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          files: ${{ steps.package.outputs.zip }}
