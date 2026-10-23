@@ -1,0 +1,471 @@
+0.410.0
+ - add yt-dlp update (credits @https://github.com/ElFishi)
+ 
+0.400.12
+ - optimize socket management (keep-alive)
+ - hide some un-needed settings
+ - update translation (credits @mipa87)
+ 
+0.400.11
+ - realy do the fix this time...
+ 
+0.400.10
+ - incorrect yt-dlp armv7l name
+ 
+0.400.9
+ - add packaged yt-dlp armv7l version
+ 
+0.400.8
+ - fix finding binary
+ 
+0.400.7
+ - fix broken execpath
+ - disable redir optmimization to handle multiple levels
+ 
+0.400.6
+ - try to add armv7l
+ - for HLS, at least use keep-alive session for redirected urls (2nd call)
+ 
+0.400.5
+ - really add Win32
+ - change STDOUT option on Windows
+ 
+0.400.4
+ - add Win32 (really)
+ 
+0.400.3
+ - add bitrate in MPEG
+ - add format in all initializers
+ 
+0.400.2
+ - indeed, -x ...
+ 
+0.400.1
+ - use -x and not -e ... really !!!
+ 
+0.400.0
+ - move to yt-dlp
+ - refactor the streaming engin
+ 
+0.310
+ - add GoogleVisitor cookier (credits @VirtuousReality)
+ - add Danish translation (credits @cfuttrup)
+
+0.300
+ - use POST to get url (credist @VirtuousRivality)
+ 
+0.212
+ - call ecb on webM and m4a setproperties fault
+ 
+0.211
+ - fix "playlists" hard-coded in english under channels
+ - remove channelplaylist if at end of line
+ 
+0.210
+ - playlist are now a sub-item of channels
+ - remove prefix and suffix when it's obviously a Channel or a Playlist
+ 
+0.200
+ - fixed version with sorting, add channel sorting
+ - don't add API key on subsequent pageToken in _call
+ - re-use channelHandler and playlistHandler in Plugin.pm and ListProtocolHandler.pm
+ - do a bit of general cleaning
+ 
+0.170
+ - let user select query order
+ - let user sort display order and select query batch size
+ - guided channel is deprecated
+ - better handling of some OPML functions learnt from Tidal plugin experience
+ - remove trailing white space
+ 
+0.163
+ - get last 2 digits for language to guess country
+ 
+0.162
+ - fix consent that seems required in EU and whose format has changed
+ 
+0.161
+ - as usual, fix previous fuck-up with key
+ 
+0.160
+ - add default key
+ 
+0.150
+ - update JSInterp for new parsing
+
+0.145.0
+  - end WebM streaming on more robust criteria than just less than DATA_CHUNK received
+ 
+0.144.2
+ - update CZ transation
+ - fix JS signature 
+ 
+0.144.1
+ - update Czech translations
+ - strings.txt must be Unix-like (as usual...)
+ 
+0.144.0
+ - add Czech translation credist @mipa87
+ 
+0.143.1
+ - allow "music.youtube.com links"
+ 
+0.143.0
+ - optimize string management using in-place update
+ 
+0.142.2
+ - use bytes in codec handlers
+
+0.142.1
+ - fix favorites expansion when LMS version is < 8.2.0
+ 
+0.142.0
+ - filter private videos
+ - show playlists when browsing a channel from favorites
+ 
+0.141.0
+ - playlists/channels are proper favorites
+ 
+0.140.2
+ - more relaxed player signature finding
+ 
+0.140.1
+ - backport error
+ 
+0.140
+ - put "start from last position" into an enclosure to let it be part of playlist
+ 
+0.130.2
+ - use POSIX::strftime instead of Time::Piece
+ 
+0.130.1
+ - handle CONSENT cookie
+ 
+0.127.1
+ - fix incorrect help when using <>
+ 
+0.127.0
+ - use keep-alive between chunks to avoid SSL re-negotiation
+ 
+0.126.3
+ - handle espaced and non-escaped JSON streams
+ 
+0.126.2
+ - info-bubble on cache was missing
+ 
+0.126.1
+ - CRLF!!!
+ 
+0.126.0
+ - enable youtube links to be used from TuneIn (credits @mavit)
+ 
+0.125.0
+ - more jsUrl changes
+ - tweak some logs
+
+0.124.1
+ - tabs instead os spaces in strings.txt
+ 
+0.124.0
+ - adapt to player_url change
+ 
+0.123.1
+ - update usage
+ 
+0.123.0
+ - show first level direct link even when there is a lastpos
+ 
+0.122.1
+ - reset position when rew a track that has been started at 'lastpos'
+ - no need to substr when unpacking 64 bits
+ 
+0.122.0
+ - yet another signature change
+ 
+0.121.0
+ - add setting for channels & playlist content cache ttl 
+ - decode HTML entities for titles
+ 
+0.120.1
+ - revert TuneIn integration as it broke 7.9.x playback
+ 
+0.120.0
+ - recently played is really what has been played recently, not what ahs been put in the playlist (use playlist to capture that)
+ - integrated TuneIn (credits @mavit)
+
+0.110.2
+ - order of JS detection matters
+ 
+0.110.1
+ - missing metadata in aac
+ 
+0.110.0
+ - reposition in aac
+ - use onStream instead of crafted paging calls
+ - various fixes
+
+0.101.0
+ - yet another format change in signature
+ 
+0.100.0
+ - memorize last position
+ 
+0.93.0
+ - yet another signature pattern
+ 
+0.92.0
+ - Increase LMS max version
+
+0.91.1
+ - add unencrypted tracks with JSON encoding
+
+0.91.0
+ - use JSON encoding for formats
+	
+0.90.2
+ - use pref_ prefix in settings for auto-handled parameters
+ 
+0.90.1
+ - set value to "0" for checkboxes that are unchecked, to avoid that initprefs with default 1 overwrite them at startup
+ 
+0.90.0
+ - add opus codec
+ 
+0.89.0
+ - get the audio sample rate & channel data through stream when using AAC in non-dash mode (no mpd)
+
+0.88.0
+ - yet another signature pattern
+ 
+0.87.2
+ - do not add 'signature' key when there is no signature
+ 
+0.87.1
+ - unescape signature before unobfuscating it
+ 
+0.87.0
+ - follow some YT signature changes (need to look at [sp] name)
+ - 64 bits endianness
+ 
+0.86.3
+ - update API creation guide
+ 
+0.86.2
+ - help string for live option was missing
+ 
+0.86.1
+ - avoid logging flooding when HTTP metadata call fails
+ 
+0.86.0
+ - add playlist to channel search
+ - search by channel id and optionally playlist only
+ - sort order by date when no search
+ - alphabetical sort of mysubscription 
+ 
+0.85.2
+ - update MPD no slower than half of actual (ot desired) edge delay (live streams with very few segments)
+ - segment offset cannot be negative ((live streams with very few segments)
+ 
+0.85.1
+ - dashmpg is now dashManifestUrl ... not sure how to handle these changes
+ 
+0.85.0
+ - return nothing in info function
+ - update signature regex
+
+0.84.0
+ - APIKey is trimmed 
+
+0.83.1
+ - offset was not set before sysread started (race condition) when startime was set
+ 
+0.83.0
+ - add back ClientID string
+ - additional signature
+ 
+0.82.0
+ - playlist search by id return directly video items, saving one click
+ 
+0.81.0
+ - add search by playlist id
+ 
+0.80.0
+ - add DASH and mp4 support
+ - (1) use 'Q>' for unpacking network order bytes
+ - (2) 'rew' restart from beginning of stream
+ - (3) start from anywhere in timeshift buffer
+ 
+0.70.0
+ - new html format, audio only file
+ 
+0.65.0
+ - new signature management
+
+0.64.0
+ - silence sysread errors
+
+0.63.2
+ - ogg granule was in ms instead of samples and using 32 bist only
+ - detect if 64 bits integer are available
+ - timecodescale was not taken into account
+  
+0.63.1
+ - better hires icons selection (and hires by defaul)
+ - clean debug stences
+ - HTTP chunks bumped to 128kB
+  
+0.63.0
+ - use LMS "All Songs" built-in feature
+ - update icon to hires automatically when playing
+ - correct infinite metadata search loop with faulty videos (result=1 but items=[])
+ - allow play all in contextMenu
+ 
+0.62.0
+ - "All tracks" is really all tracks, not just current page
+ - correct an infinite loop bug on tracks with no duration / no title
+ - refactoring
+ - workaround for LMS defeatTTP not sending search value (cache last search for 60s)
+ 
+0.61.2
+ - Add "settings" link in plugin page
+ 
+0.61.1
+ - Escape curly bracket in regex is mandatory for Perl 5.26 
+ 
+0.61.0
+ - Choice of icon resolution
+ 
+0.60.1
+ - When EBML is wrong, move forward only by the size of a single EBML 
+ - Correct URL/ID direct search  (result was not handled by list manager)
+
+0.60.0
+ - Complete rewrite of HTTP streaming & webm parsing, now requesting file by chunks
+ - Solves issue when long streaming end unexpectidly under Windows
+ - Pause can last indefinitively 
+ 
+0.52.1
+ - Avoid infinite locking loop if HTTP error happened before end of track (Windows)
+ - Set duration from metadata if it is not in WebM file
+
+0.52.0
+ - Separate WebM parsing from ProtocolHandler
+ - Get sample rate and bit rate before song starts to accurate PCM transcoding
+ - reorganize signature extraciton for better clarity
+ - Set duration correctly
+ - Remove attempt to read multiple track per url (was broken anyway)
+   
+0.51.2
+ - Increase EBML max buffer to 129kB
+
+0.51.0
+ - Handle change in YouTube JS for sig
+
+ 0.50.0
+ - Add access to personal YouTube account
+ 
+0.42.2
+ - Force disable direct streaming (should not be needed)
+
+0.42.1
+ - Corrected url in APIkey creation help
+ - Corrected string for Playlist identificator tag
+ 
+0.42.0
+ - Patch according to https://github.com/rg3/youtube-dl/issues/11663
+
+0.41.3
+ - Bubble-help for playlist tag was not set
+
+0.41.2
+ - Minor text corrections
+
+0.41.1
+ - add instructions to create a key on the main screen
+ 
+0.41
+ - Improve search infoMenu & add by album for "On YouTube"
+ 
+0.40.1
+ - Precedence mistake caused an error using newer Perl (Jessie)
+
+0.40
+ - FLV is deprecated, move to WEBM format
+ - Update JS parsing rule
+ 
+0.38.1
+ - Hash code pattern extraction in video search by ID was only alphanumerical: '-' and '_' are need
+ 
+0.38
+ - Can play the whole result of a search (only video, not channels)
+ - add 'related URL/ID' search
+ - Play URL is accepting full URL or just and ID
+
+0.37.4
+ - Another change in YouTube signature management
+
+0.37.2
+ - Adaptation to YouTube code generation (credit to tgenin)
+ 
+0.37.1
+ - change in signature management
+ 
+0.37
+ - only metadata from active playlist were searched
+
+0.36.1
+ - Addition help in settings to add missing SSL libraries
+
+0.36
+ - Fix constant "plugin updated" message in LMS
+ 
+0.35
+ - Trying to detect if IO::Socket::SSL is available
+ - Favorite returned list was not accepted (blessing problem ?) 
+ 
+0.34.1
+ - url parsing is done inside protocolhandler 
+
+0.34
+ - offer choice to prefix and postfix for Channel and Playlist
+ 
+0.33
+ - Encode search in utf8 to accept multi-byte strings
+ - Remove cache flush, does not work
+ - Channels and Playlists can be added to favorites
+ - Pressing 'play' on guided channels only play video in channels, *not* playlist
+ - Change backend / frontend a bit to factorize similar function 
+ - Skip videos w/o a thumbnail(private/deleted)
+ - Channels are in bold and playlist in italic bold
+ - Add search in everything (channel, playlist and video)
+ - (B) play/add on a channel/playlist was limited to 1st 50 items
+ - (B) on LMS < 7.9 playlist played directly from channel/playlist failed to get metadata
+ 
+0.32
+ - Guided Channels can include Playlists
+
+0.31
+ - add Guided Channels (categories)
+ µ
+0.30
+ - Major refactor by Michael
+ - Channel/Playlist can be played directly as playlist
+ - Get video icons in the search results
+ - Caching of searches (cache can be flushed in settings)
+ - Get metadata for the whole playlist
+ 
+0.27
+ - Handle HTTP redirect
+ - Country taken from system
+
+0.26.1
+ - Remove wrong SSL parameter on opening
+ 
+0.26
+ - JSinterpret was using JSON and not JSON:XS which seems to not be available on some Linux 
+ 
+0.25
+ - Use JSON::XS so move from_json to json_decode
+ - Apply Michael's path to clean 7.6 legacy dependencies
+ - No topmenu if APIkey is missing
+ - Integrate signature management

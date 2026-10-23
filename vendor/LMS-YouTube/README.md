@@ -1,12 +1,21 @@
-# Upstream LMS-YouTube mirror
+# LMS-YouTube
 
-This directory is populated by the GitHub Actions workflow `.github/workflows/mirror-lms-youtube.yml`.
+Fork of [Triode's YouTube plugin for API V3](https://forums.slimdevices.com/showthread.php?87731-Announce-YouTube-Plugin&p=631449&viewfull=1#post631449) for [Logitech Media Server](https://github.com/Logitech/slimserver).
+See the support thread here: [forums.slimdevices.com/showthread.php?105840-ANNOUNCE-YouTube-Plugin-(API-v3)](http://forums.slimdevices.com/showthread.php?105840-ANNOUNCE-YouTube-Plugin-(API-v3)&p=857414&viewfull=1#post857414).
 
-- Upstream project: https://github.com/philippe44/LMS-YouTube
-- The exact upstream commit is recorded in `UPSTREAM_COMMIT`.
-- This is a source mirror for review and development; it does not automatically install anything on the QNAP NAS.
-- Preserve upstream copyright notices and license files when modifying or redistributing the plugin.
+## Common pitfalls
 
-## Refresh
+### SSL issues
 
-Open the repository's **Actions** tab, select **Mirror upstream LMS-YouTube source**, choose **Run workflow**, and optionally provide a branch/tag/commit. The workflow commits the complete upstream source tree under `vendor/LMS-YouTube/`.
+This plugin *requires* SSL so make sure it's installed on your LMS server. Not a problem for Windows, OSX, most Linux x86, Raspberry pi, Cubie, Odroid and others that use a Debian-based, but can be problematic with some NAS.
+Other than that, Perl must have SSL support enabled, which again is available in all recent distribution and LMS versions (I think). But in case of problem and for Debian-ish Linux, you can try
+
+```bash
+sudo apt install libio-socket-ssl-perl libnet-ssleay-perl
+```
+
+at any command prompt.
+
+### Country for Categories
+
+Keep in mind that `UK` is *not* a region code, but `GB` is.
