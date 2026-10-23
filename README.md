@@ -50,7 +50,9 @@ automatic casting.
 
 For QNAP LMS installations where the YouTube plugin's built-in **Update yt-dlp** action fails because the PyInstaller runtime cannot load `libutil.so.1`, see [qnap/README.md](qnap/README.md). The helper at [qnap/update-yt-dlp.sh](qnap/update-yt-dlp.sh) downloads the official Linux binary, verifies the upstream SHA-256 checksum, keeps a backup, and performs a version smoke test. It bypasses the plugin's self-updater; it does not yet patch the plugin's Update button.
 
-**Scope note:** this repository contains Lyrion Unified Search and YouTube Cast for Chromecast, not a complete mirror of the upstream LMS YouTube plugin. The plugin source is maintained separately at [philippe44/LMS-YouTube](https://github.com/philippe44/LMS-YouTube). The QNAP workaround is kept separate so it does not silently replace or fork upstream plugin code.
+## Upstream YouTube plugin source mirror
+
+A GitHub Actions workflow mirrors the upstream [philippe44/LMS-YouTube](https://github.com/philippe44/LMS-YouTube) add-on source into [`vendor/LMS-YouTube/`](vendor/LMS-YouTube/). The mirror is for source inspection and development; it does not automatically install or replace the plugin on QNAP. See [docs/YOUTUBE-MIRROR.md](docs/YOUTUBE-MIRROR.md) for the workflow and status-check instructions.
 
 ## Development and release
 
