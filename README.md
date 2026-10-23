@@ -46,6 +46,12 @@ Cast for Chromecast**, then restart LMS if requested. Configure the Chromecast
 host in **Settings → Plugins → YouTube Cast for Chromecast** before enabling
 automatic casting.
 
+## QNAP QPKG: yt-dlp update workaround
+
+For QNAP LMS installations where the YouTube plugin's built-in **Update yt-dlp** action fails because the PyInstaller runtime cannot load `libutil.so.1`, see [qnap/README.md](qnap/README.md). The helper at [qnap/update-yt-dlp.sh](qnap/update-yt-dlp.sh) downloads the official Linux binary, verifies the upstream SHA-256 checksum, keeps a backup, and performs a version smoke test. It bypasses the plugin's self-updater; it does not yet patch the plugin's Update button.
+
+**Scope note:** this repository contains Lyrion Unified Search and YouTube Cast for Chromecast, not a complete mirror of the upstream LMS YouTube plugin. The plugin source is maintained separately at [philippe44/LMS-YouTube](https://github.com/philippe44/LMS-YouTube). The QNAP workaround is kept separate so it does not silently replace or fork upstream plugin code.
+
 ## Development and release
 
 - Plugin source: UnifiedSearch/Plugin.pm
