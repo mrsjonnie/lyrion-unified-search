@@ -1,0 +1,59 @@
+name: Mirror upstream LMS-YouTube source
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: "Upstream branch, tag, or commit (default: master)"
+        required: false
+        default: "master"
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/mirror-lms-youtube.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mirror-lms-youtube
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Fetch upstream source
+        env:
+          UPSTREAM_REF: ${{ inputs.upstream_ref || 'master' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none https://github.com/philippe44/LMS-YouTube.git /tmp/LMS-YouTube
+          git -C /tmp/LMS-YouTube checkout "$UPSTREAM_REF"
+          rm -rf vendor/LMS-YouTube
+          mkdir -p vendor/LMS-YouTube
+          tar -C /tmp/LMS-YouTube --exclude=.git -cf - . | tar -C vendor/LMS-YouTube -xf -
+          git -C /tmp/LMS-YouTube rev-parse HEAD > vendor/LMS-YouTube/UPSTREAM_COMMIT
+          printf '%s\n' "Upstream: https://github.com/philippe44/LMS-YouTube" > vendor/LMS-YouTube/UPSTREAM_SOURCE.txt
+          printf 'Mirrored upstream ref %s at %s\n' "$UPSTREAM_REF" "$(cat vendor/LMS-YouTube/UPSTREAM_COMMIT)"
+
+      - name: Commit mirrored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor/LMS-YouTube
+          if git diff --cached --quiet; then
+            echo "Upstream mirror is already current."
+            exit 0
+          fi
+          git commit -m "Mirror upstream LMS-YouTube source"
+          git push origin HEAD:main
