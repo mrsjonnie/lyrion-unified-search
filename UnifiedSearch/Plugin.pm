@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.15';
+our $VERSION = '0.3.16';
 
 my $enabled = 0;
 
@@ -136,12 +136,20 @@ sub searchResultsHandler {
         my %formatted;
         for my $source (keys %$sources) {
             $formatted{$source} = {
-                name  => $sources->{$source}{name},
-                error => $sources->{$source}{error},
+                name          => $sources->{$source}{name},
+                error         => $sources->{$source}{error},
+                castAvailable => $source eq 'youtube'
+                    && Slim::Utils::PluginManager->isEnabled('Plugins::YouTubeCast::Plugin') ? 1 : 0,
                 items => [
                     map {
                         my $name = _itemName($_);
-                        $source eq 'bbcsounds' ? _bbcDisplayName($name) : $name;
+                        if ($source eq 'youtube') {
+                            my $url = ref $_ eq 'HASH' ? ($_->{url} || $_->{link} || '') : '';
+                            +{ name => $name, videoId => _youtubeVideoId($url) };
+                        }
+                        else {
+                            +{ name => $source eq 'bbcsounds' ? _bbcDisplayName($name) : $name };
+                        }
                     } @{ $sources->{$source}{items} || [] }
                 ],
             };
@@ -313,6 +321,15 @@ sub _searchTopArtists {
             $source_callback->({ search_error => 1 });
         }
     }
+}
+
+sub _youtubeVideoId {
+    my ($url) = @_;
+    return '' unless defined $url && !ref $url;
+    return $1 if $url =~ m{(?:youtube://(?:https?://)?|https?://)?(?:(?:www|m|music)\.)?youtube\.com/(?:watch\?[^#]*?\bv=|embed/|v/|shorts/|live/)([A-Za-z0-9_-]{11})(?:[?&#]|\z)}i;
+    return $1 if $url =~ m{(?:youtube://(?:https?://)?|https?://)?youtu\.be/([A-Za-z0-9_-]{11})(?:[?&#]|\z)}i;
+    return $1 if $url =~ m{\Ayoutube://([A-Za-z0-9_-]{11})(?:[?&]|\z)}i;
+    return '';
 }
 
 sub _itemName {

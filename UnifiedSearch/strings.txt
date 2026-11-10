@@ -61,3 +61,19 @@ PLUGIN_UNIFIEDSEARCH_RADIONET
 PLUGIN_UNIFIEDSEARCH_PODCAST
 	EN	Podcasts
 	NL	Podcasts
+
+PLUGIN_UNIFIEDSEARCH_CAST_TO_TV
+	EN	Cast to TV
+	NL	Cast naar TV
+
+PLUGIN_UNIFIEDSEARCH_CASTING
+	EN	Casting...
+	NL	Bezig met casten...
+
+PLUGIN_UNIFIEDSEARCH_CAST_STARTED
+	EN	Started
+	NL	Gestart
+
+PLUGIN_UNIFIEDSEARCH_CAST_FAILED
+	EN	Cast failed. Check the LMS log.
+	NL	Casten mislukt. Controleer het LMS-logboek.

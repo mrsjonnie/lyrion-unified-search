@@ -6,13 +6,11 @@ use base qw(Slim::Plugin::Base);
 
 use File::Basename qw(dirname);
 use File::Spec::Functions qw(catfile);
-use Scalar::Util qw(blessed);
-use Slim::Control::Request;
+use JSON::XS qw(encode_json);
+use Slim::Player::Client;
 use Slim::Utils::Log;
 use Slim::Utils::OSDetect;
 use Slim::Utils::Prefs;
-use Slim::Player::Playlist;
-use Slim::Schema;
 
 my $prefs = preferences('plugin.youtubecast');
 my $log = Slim::Utils::Log->addLogCategory({
@@ -23,7 +21,6 @@ my $log = Slim::Utils::Log->addLogCategory({
 my @workers;
 my $warnedMissingHost = 0;
 my %lastCast;
-my $originalPlaylistControl;
 
 sub initPlugin {
     my $class = shift;
@@ -37,30 +34,14 @@ sub initPlugin {
     $class->SUPER::initPlugin();
 
     if (main::WEBUI) {
+        require Slim::Web::Pages;
         require Plugins::YouTubeCast::Settings;
         Plugins::YouTubeCast::Settings->new;
+        Slim::Web::Pages->addPageFunction('plugins/YouTubeCast/cast.json', \&castHandler);
     }
-
-    # Replace playlistcontrol so a single YouTube load can be cast without
-    # starting audio playback on the selected LMS player.
-    $originalPlaylistControl = Slim::Control::Request::addDispatch(
-        ['playlistcontrol'], [1, 0, 1, \&_playlistControlCommand]
-    );
-    Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['load', 'playtracks']]);
-    Slim::Control::Request::subscribe(\&_onPlaylistJump, [['playlist'], ['jump']]);
-    Slim::Control::Request::subscribe(\&_onPlayerPlay, [['play']]);
 }
 
 sub shutdownPlugin {
-    if ($originalPlaylistControl) {
-        Slim::Control::Request::addDispatch(
-            ['playlistcontrol'], [1, 0, 1, $originalPlaylistControl]
-        );
-        $originalPlaylistControl = undef;
-    }
-    Slim::Control::Request::unsubscribe(\&_onPlaylistPlay);
-    Slim::Control::Request::unsubscribe(\&_onPlaylistJump);
-    Slim::Control::Request::unsubscribe(\&_onPlayerPlay);
     for my $worker (@workers) {
         $worker->die if $worker && $worker->alive;
     }
@@ -72,140 +53,52 @@ sub getDisplayName {
     return 'PLUGIN_YOUTUBECAST';
 }
 
-sub _playlistControlCommand {
-    my ($request) = @_;
+sub castHandler {
+    my ($webClient, $params, $callback, $httpClient, $response) = @_;
+    $response->content_type('application/json; charset=utf-8');
 
-    # Only intercept a single-track load. Leave playlists, folders, inserts,
-    # deletes and multi-track requests to LMS unchanged.
-    if (($request->getParam('cmd') || '') eq 'load') {
-        my $trackIds = $request->getParam('track_id');
-        my $singleTrack = !defined($trackIds) || $trackIds !~ /,/;
+    my $reply = sub {
+        my ($ok, $message) = @_;
+        my $json = encode_json({ ok => $ok ? 1 : 0, message => $message });
+        $callback->($webClient, $params, \$json, $httpClient, $response);
+    };
 
-        if ($singleTrack) {
-            my $url = _requestTrackUrl($request, 'track_id', 'url');
-            if (_youtubeVideoId($url)) {
-                if (_startCastForUrl($request->client, $url)) {
-                    $request->addResult('count', 1);
-                    $request->setStatusDone();
-                    return;
-                }
-            }
-        }
+    unless ($prefs->get('enabled')) {
+        return $reply->(0, 'YouTube Cast is disabled in plugin settings');
     }
 
-    # Preserve normal LMS behaviour for every request we don't handle.
-    if ($originalPlaylistControl) {
-        return $originalPlaylistControl->($request);
+    my $videoId = $params->{videoId} || '';
+    unless ($videoId =~ /\A[A-Za-z0-9_-]{11}\z/) {
+        return $reply->(0, 'Invalid YouTube video ID');
     }
 
-    $request->setStatusBadDispatch();
-}
+    my $playerId = $params->{player} || '';
+    my ($player) = grep {
+        defined $_->id && $_->id eq $playerId
+    } Slim::Player::Client::clients();
 
-sub _onPlaylistPlay {
-    my ($request) = @_;
-    my $client = $request->client or return;
-    my $url = _requestTrackUrl($request, '_item', '_listref', 'url');
-    if (!$url) {
-        my $track = Slim::Player::Playlist::track($client);
-        $url = _trackUrl($track);
-    }
-    _startCastForUrl($client, $url);
-}
-
-sub _onPlayerPlay {
-    my ($request) = @_;
-    my $client = $request->client or return;
-    my $track = Slim::Player::Playlist::track($client) or return;
-    my $url = _trackUrl($track);
-    _startCastForUrl($client, $url);
-}
-
-sub _onPlaylistJump {
-    my ($request) = @_;
-    my $client = $request->client or return;
-    my $index = $request->getParam('_index');
-    $index = $request->getParam('index') unless defined $index;
-    return unless defined $index && $index =~ /\A\d+\z/;
-
-    my $track = Slim::Player::Playlist::track($client, $index) or return;
-    _startCastForUrl($client, _trackUrl($track));
-}
-
-sub _trackUrl {
-    my ($track) = @_;
-    return '' unless defined $track;
-    return $track->url || '' if blessed($track) && $track->can('url');
-    return $track unless ref $track;
-    return '';
-}
-
-sub _requestTrackUrl {
-    my ($request, @params) = @_;
-
-    for my $param (@params) {
-        my $value = $request->getParam($param);
-        next unless defined $value;
-
-        $value = $value->[0] if ref $value eq 'ARRAY' && @$value;
-        next if ref $value eq 'ARRAY';
-
-        if (ref $value && eval { $value->can('url') }) {
-            my $url = $value->url || '';
-            return $url if _youtubeVideoId($url);
-            next;
-        }
-
-        if ($param eq 'track_id' && $value =~ /\A-?\d+(?:,-?\d+)*\z/) {
-            my ($trackId) = split /,/, $value;
-            my $track = _trackById($trackId);
-            my $url = $track && $track->url;
-            return $url if $url && _youtubeVideoId($url);
-            next;
-        }
-
-        return $value if _youtubeVideoId($value);
-
-        if ($value =~ /\A-?\d+\z/) {
-            my $track = _trackById($value);
-            my $url = $track && $track->url;
-            return $url if $url && _youtubeVideoId($url);
-        }
+    unless ($player) {
+        return $reply->(0, 'The selected LMS player is not available');
     }
 
-    return '';
+    my ($ok, $message) = _startCastForVideoId($player, $videoId);
+    return $reply->($ok, $message);
 }
 
-sub _trackById {
-    my ($trackId) = @_;
-    return Slim::Schema->find('Track', $trackId) if $trackId >= 0;
-
-    require Slim::Schema::RemoteTrack;
-    return Slim::Schema::RemoteTrack->fetchById($trackId);
-}
-
-sub _startCastForUrl {
-    my ($client, $url) = @_;
-    return 0 unless $prefs->get('enabled');
-
-    my $videoId = _youtubeVideoId($url);
-    unless ($videoId) {
-        $log->debug("Play request did not contain a recognized original YouTube URL: " . ($url || '(empty URL)'));
-        return;
-    }
+sub _startCastForVideoId {
+    my ($client, $videoId) = @_;
+    return (0, 'YouTube Cast is disabled in plugin settings') unless $prefs->get('enabled');
+    return (0, 'Invalid YouTube video ID') unless $videoId && $videoId =~ /\A[A-Za-z0-9_-]{11}\z/;
 
     my $host = _castHostForClient($client);
     $host =~ s/^\s+|\s+$//g;
     unless (length $host) {
-        unless ($warnedMissingHost) {
-            $log->warn('Automatic YouTube casting is enabled, but no Chromecast host is configured for this player');
-            $warnedMissingHost = 1;
-        }
-        return;
+        $log->warn('YouTube Cast is enabled, but no Chromecast host is configured for this player');
+        return (0, 'No Chromecast host is configured for the selected LMS player');
     }
-    $warnedMissingHost = 0;
     unless (_validHost($host)) {
         $log->error('Configured Chromecast host is invalid');
-        return 0;
+        return (0, 'The configured Chromecast host is invalid');
     }
 
     my $clientId = $client && $client->id || 'unknown';
@@ -214,8 +107,7 @@ sub _startCastForUrl {
         && $lastCast{$clientId}{host} eq $host
         && $lastCast{$clientId}{videoId} eq $videoId
         && $now - $lastCast{$clientId}{time} < 5) {
-        # The cast is already in progress; still consume the LMS play request.
-        return 1;
+        return (1, 'This video is already being sent to the TV');
     }
 
     my $pluginDir = dirname(__FILE__);
@@ -226,34 +118,25 @@ sub _startCastForUrl {
 
     my $worker = eval {
         require Proc::Background;
-        Proc::Background->new(
-            {
-                %$workerOptions,
-                command => [
-                    $^X,
-                    '-I',
-                    $pluginDir,
-                    $workerScript,
-                    $host,
-                    $videoId,
-                ],
-            },
-        );
+        Proc::Background->new({
+            %$workerOptions,
+            command => [$^X, '-I', $pluginDir, $workerScript, $host, $videoId],
+        });
     };
 
     if (!$worker || $@) {
         my $error = $@ || 'process creation failed without an error from Proc::Background';
         $error =~ s/\s+\z//;
         $log->error("Could not start Chromecast worker ($^X, $workerScript): $error");
-        return 0;
+        return (0, 'Could not start the Chromecast worker; check the LMS log');
     }
 
     @workers = grep { $_ && $_->alive } @workers;
     push @workers, $worker;
     $lastCast{$clientId} = { host => $host, videoId => $videoId, time => $now };
     my $playerName = $client && ($client->name || $client->id) || 'unknown LMS player';
-    $log->info("Starting Chromecast YouTube cast for video $videoId on $playerName ($host)");
-    return 1;
+    $log->info("Explicit YouTube Cast requested for video $videoId on $playerName ($host)");
+    return (1, 'Cast request sent to the TV');
 }
 
 sub _castHostForClient {
