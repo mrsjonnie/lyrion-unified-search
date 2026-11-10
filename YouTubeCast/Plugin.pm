@@ -23,6 +23,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 my @workers;
 my $warnedMissingHost = 0;
 my %lastCast;
+my $originalPlaylistControl;
 
 sub initPlugin {
     my $class = shift;
@@ -40,14 +41,23 @@ sub initPlugin {
         Plugins::YouTubeCast::Settings->new;
     }
 
-    Slim::Control::Request::subscribe(\&_onPlaylistControl, [['playlistcontrol']]);
+    # Replace playlistcontrol so a single YouTube load can be cast without
+    # starting audio playback on the selected LMS player.
+    $originalPlaylistControl = Slim::Control::Request::addDispatch(
+        ['playlistcontrol'], [1, 0, 1, \&_playlistControlCommand]
+    );
     Slim::Control::Request::subscribe(\&_onPlaylistPlay, [['playlist'], ['load', 'playtracks']]);
     Slim::Control::Request::subscribe(\&_onPlaylistJump, [['playlist'], ['jump']]);
     Slim::Control::Request::subscribe(\&_onPlayerPlay, [['play']]);
 }
 
 sub shutdownPlugin {
-    Slim::Control::Request::unsubscribe(\&_onPlaylistControl);
+    if ($originalPlaylistControl) {
+        Slim::Control::Request::addDispatch(
+            ['playlistcontrol'], [1, 0, 1, $originalPlaylistControl]
+        );
+        $originalPlaylistControl = undef;
+    }
     Slim::Control::Request::unsubscribe(\&_onPlaylistPlay);
     Slim::Control::Request::unsubscribe(\&_onPlaylistJump);
     Slim::Control::Request::unsubscribe(\&_onPlayerPlay);
@@ -62,12 +72,33 @@ sub getDisplayName {
     return 'PLUGIN_YOUTUBECAST';
 }
 
-sub _onPlaylistControl {
+sub _playlistControlCommand {
     my ($request) = @_;
-    return unless ($request->getParam('cmd') || '') eq 'load';
 
-    my $url = _requestTrackUrl($request, 'track_id', 'url');
-    _startCastForUrl($request->client, $url);
+    # Only intercept a single-track load. Leave playlists, folders, inserts,
+    # deletes and multi-track requests to LMS unchanged.
+    if (($request->getParam('cmd') || '') eq 'load') {
+        my $trackIds = $request->getParam('track_id');
+        my $singleTrack = !defined($trackIds) || $trackIds !~ /,/;
+
+        if ($singleTrack) {
+            my $url = _requestTrackUrl($request, 'track_id', 'url');
+            if (_youtubeVideoId($url)) {
+                if (_startCastForUrl($request->client, $url)) {
+                    $request->addResult('count', 1);
+                    $request->setStatusDone();
+                    return;
+                }
+            }
+        }
+    }
+
+    # Preserve normal LMS behaviour for every request we don't handle.
+    if ($originalPlaylistControl) {
+        return $originalPlaylistControl->($request);
+    }
+
+    $request->setStatusBadDispatch();
 }
 
 sub _onPlaylistPlay {
@@ -154,7 +185,7 @@ sub _trackById {
 
 sub _startCastForUrl {
     my ($client, $url) = @_;
-    return unless $prefs->get('enabled');
+    return 0 unless $prefs->get('enabled');
 
     my $videoId = _youtubeVideoId($url);
     unless ($videoId) {
@@ -174,7 +205,7 @@ sub _startCastForUrl {
     $warnedMissingHost = 0;
     unless (_validHost($host)) {
         $log->error('Configured Chromecast host is invalid');
-        return;
+        return 0;
     }
 
     my $clientId = $client && $client->id || 'unknown';
@@ -183,7 +214,7 @@ sub _startCastForUrl {
         && $lastCast{$clientId}{host} eq $host
         && $lastCast{$clientId}{videoId} eq $videoId
         && $now - $lastCast{$clientId}{time} < 5) {
-        return;
+        return 0;
     }
 
     my $pluginDir = dirname(__FILE__);
@@ -213,7 +244,7 @@ sub _startCastForUrl {
         my $error = $@ || 'process creation failed without an error from Proc::Background';
         $error =~ s/\s+\z//;
         $log->error("Could not start Chromecast worker ($^X, $workerScript): $error");
-        return;
+        return 0;
     }
 
     @workers = grep { $_ && $_->alive } @workers;
@@ -221,6 +252,7 @@ sub _startCastForUrl {
     $lastCast{$clientId} = { host => $host, videoId => $videoId, time => $now };
     my $playerName = $client && ($client->name || $client->id) || 'unknown LMS player';
     $log->info("Starting Chromecast YouTube cast for video $videoId on $playerName ($host)");
+    return 1;
 }
 
 sub _castHostForClient {
