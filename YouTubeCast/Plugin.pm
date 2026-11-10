@@ -214,7 +214,8 @@ sub _startCastForUrl {
         && $lastCast{$clientId}{host} eq $host
         && $lastCast{$clientId}{videoId} eq $videoId
         && $now - $lastCast{$clientId}{time} < 5) {
-        return 0;
+        # The cast is already in progress; still consume the LMS play request.
+        return 1;
     }
 
     my $pluginDir = dirname(__FILE__);
