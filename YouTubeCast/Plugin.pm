@@ -27,7 +27,6 @@ sub initPlugin {
 
     $prefs->init({
         enabled       => 0,
-        target_host   => '',
         host_mappings => '',
     });
 
@@ -164,7 +163,7 @@ sub _castHostForClient {
             if $clientName && lc($entry->[0]) eq lc($clientName);
     }
 
-    return $prefs->get('target_host') || '';
+    return '';
 }
 
 sub _validHost {

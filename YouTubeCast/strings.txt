@@ -10,14 +10,6 @@ PLUGIN_YOUTUBECAST_ENABLED_DESC
 	EN	When enabled, YouTube search results show a Cast to TV button. Clicking it starts the original video in the native YouTube app on the Chromecast assigned to the selected LMS player. Normal LMS playback is not intercepted. Cast connection errors are logged in the LMS log directory.
 	NL	Als dit is ingeschakeld, tonen YouTube-zoekresultaten een knop Cast naar TV. Door erop te klikken start de originele video in de YouTube-app op de Chromecast die aan de geselecteerde LMS-speler is gekoppeld. Normaal LMS-afspelen wordt niet onderschept. Verbindingsfouten worden vastgelegd in de LMS-logmap.
 
-PLUGIN_YOUTUBECAST_HOST
-	EN	Chromecast host or IP address
-	NL	Hostnaam of IP-adres van de Chromecast
-
-PLUGIN_YOUTUBECAST_HOST_DESC
-	EN	Optional fallback Chromecast IP address or local hostname, used when the selected LMS player has no mapping below. Enter only the host or IP (no http:// and no port); the LMS server connects to TCP port 8009.
-	NL	Optioneel standaard-IP-adres of lokale hostnaam van de Chromecast; gebruikt wanneer de geselecteerde LMS-speler hieronder geen koppeling heeft. Vul alleen de hostnaam of het IP in (geen http:// en geen poort); de LMS-server maakt verbinding via TCP-poort 8009.
-
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS
 	EN	Chromecast for each LMS player
 	NL	Chromecast per LMS-speler

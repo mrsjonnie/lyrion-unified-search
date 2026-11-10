@@ -4,10 +4,6 @@
     <input name="pref_enabled" type="checkbox" [% IF prefs.pref_enabled %]checked[% END %]>
 [% END %]
 
-[% WRAPPER setting title="PLUGIN_YOUTUBECAST_HOST" desc="PLUGIN_YOUTUBECAST_HOST_DESC" %]
-    <input type="text" class="stdedit" name="pref_target_host" id="pref_target_host" value="[% prefs.pref_target_host | html %]" size="40">
-[% END %]
-
 [% WRAPPER setting title="PLUGIN_YOUTUBECAST_PLAYER_HOSTS" desc="PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC" %]
     [% IF youtubecastPlayers.size %]
     <table class="browsingList">

@@ -17,7 +17,7 @@ sub page {
 }
 
 sub prefs {
-    return ($prefs, qw(enabled target_host host_mappings));
+    return ($prefs, qw(enabled host_mappings));
 }
 
 sub handler {
