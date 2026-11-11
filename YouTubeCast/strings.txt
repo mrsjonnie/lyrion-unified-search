@@ -2,14 +2,6 @@ PLUGIN_YOUTUBECAST
 	EN	YouTube Cast for Chromecast
 	NL	YouTube Cast voor Chromecast
 
-PLUGIN_YOUTUBECAST_ENABLED
-	EN	Automatic YouTube video casting
-	NL	Automatisch YouTube-video's casten
-
-PLUGIN_YOUTUBECAST_ENABLED_DESC
-	EN	Enter a Chromecast or Google Cast-enabled TV IP/local hostname for each LMS player. A blank field keeps normal LMS YouTube audio playback. A configured host sends YouTube video to that TV while LMS uses a silent stream to preserve playlist progression.
-	NL	Vul per LMS-speler het IP-adres of de lokale hostnaam van een Chromecast of Google Cast-tv in. Een leeg veld behoudt normaal YouTube-audio via LMS. Bij een ingevuld adres wordt de YouTube-video naar die tv gestuurd en gebruikt LMS een stille stream zodat de afspeellijst blijft doorlopen.
-
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS
 	EN	Chromecast for each LMS player
 	NL	Chromecast per LMS-speler
