@@ -3,20 +3,20 @@ PLUGIN_YOUTUBECAST
 	NL	YouTube Cast voor Chromecast
 
 PLUGIN_YOUTUBECAST_ENABLED
-	EN	Enable the Cast to TV button in YouTube search results
-	NL	De knop Cast naar TV in YouTube-zoekresultaten inschakelen
+	EN	Automatic YouTube video casting
+	NL	Automatisch YouTube-video's casten
 
 PLUGIN_YOUTUBECAST_ENABLED_DESC
-	EN	When enabled, YouTube search results show a Cast to TV button. Clicking it starts the original video in the native YouTube app on the Chromecast assigned to the selected LMS player. Normal LMS playback is not intercepted. Cast connection errors are logged in the LMS log directory.
-	NL	Als dit is ingeschakeld, tonen YouTube-zoekresultaten een knop Cast naar TV. Door erop te klikken start de originele video in de YouTube-app op de Chromecast die aan de geselecteerde LMS-speler is gekoppeld. Normaal LMS-afspelen wordt niet onderschept. Verbindingsfouten worden vastgelegd in de LMS-logmap.
+	EN	Enter a Chromecast or Google Cast-enabled TV IP/local hostname for each LMS player. A blank field keeps normal LMS YouTube audio playback. A configured host sends YouTube video to that TV while LMS uses a silent stream to preserve playlist progression.
+	NL	Vul per LMS-speler het IP-adres of de lokale hostnaam van een Chromecast of Google Cast-tv in. Een leeg veld behoudt normaal YouTube-audio via LMS. Bij een ingevuld adres wordt de YouTube-video naar die tv gestuurd en gebruikt LMS een stille stream zodat de afspeellijst blijft doorlopen.
 
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS
 	EN	Chromecast for each LMS player
 	NL	Chromecast per LMS-speler
 
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC
-	EN	Enter the Chromecast or Google Cast-enabled TV IP address or local hostname in the row for each LMS player. Enter only the host or IP (no http:// and no port). The selected player is matched when Cast to TV is clicked. The LMS server must be able to reach the device on TCP port 8009; the LMS player IP is not the Chromecast address.
-	NL	Vul het IP-adres of de lokale hostnaam in van de Chromecast of Google Cast-tv voor elke LMS-speler. Vul alleen de hostnaam of het IP in (geen http:// en geen poort). De geselecteerde speler wordt gekoppeld wanneer je op Cast naar TV klikt. De LMS-server moet het apparaat kunnen bereiken via TCP-poort 8009; het IP-adres van de LMS-speler is niet het Chromecast-adres.
+	EN	Enter only the Chromecast or Google Cast-enabled TV IP address or local hostname (no scheme or port). A blank value leaves YouTube audio playback on LMS; a configured value casts video to that TV. The LMS server must be able to reach the device on TCP port 8009.
+	NL	Vul alleen het IP-adres of de lokale hostnaam van de Chromecast of Google Cast-tv in (geen http:// en geen poort). Een leeg veld laat YouTube-audio via LMS afspelen; een ingevuld adres cast de video naar die tv. De LMS-server moet het apparaat kunnen bereiken via TCP-poort 8009.
 
 PLUGIN_YOUTUBECAST_PLAYER
 	EN	LMS player
