@@ -7,8 +7,8 @@ PLUGIN_YOUTUBECAST_PLAYER_HOSTS
 	NL	Chromecast per LMS-speler
 
 PLUGIN_YOUTUBECAST_PLAYER_HOSTS_DESC
-	EN	Enter only the Chromecast or Google Cast-enabled TV IP address or local hostname (no scheme or port). A blank value leaves YouTube audio playback on LMS; a configured value casts video to that TV. The LMS server must be able to reach the device on TCP port 8009.
-	NL	Vul alleen het IP-adres of de lokale hostnaam van de Chromecast of Google Cast-tv in (geen http:// en geen poort). Een leeg veld laat YouTube-audio via LMS afspelen; een ingevuld adres cast de video naar die tv. De LMS-server moet het apparaat kunnen bereiken via TCP-poort 8009.
+	EN	The default Chromecast host is 192.168.178.75 for every LMS player. You can override it per player; leave the default value to cast to 192.168.178.75. The LMS server must reach the device on TCP port 8009.
+	NL	Standaard gebruikt elke LMS-speler Chromecast-adres 192.168.178.75. Je kunt dit per speler aanpassen; laat de standaardwaarde staan om naar 192.168.178.75 te casten. De LMS-server moet het apparaat kunnen bereiken via TCP-poort 8009.
 
 PLUGIN_YOUTUBECAST_PLAYER
 	EN	LMS player
