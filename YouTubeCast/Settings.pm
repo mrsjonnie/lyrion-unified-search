@@ -66,7 +66,7 @@ sub beforeRender {
                 name => $name,
                 id   => $id,
                 key  => _playerKey($id),
-                host => $hosts{$id} || $hosts{$name} || '192.168.178.75',
+                host => $hosts{$id} || $hosts{$name} || '',
             }
         } Slim::Player::Client::clients()
     ];
