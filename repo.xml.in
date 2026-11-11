@@ -55,8 +55,8 @@
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Automatically casts YouTube videos to 192.168.178.75 by default; host can be overridden per LMS player</desc>
-            <desc lang="NL">Cast YouTube-video's standaard automatisch naar 192.168.178.75; het adres kan per LMS-speler worden aangepast</desc>
+            <desc lang="EN">Automatically casts YouTube videos only for LMS players with a configured Chromecast host</desc>
+            <desc lang="NL">Cast YouTube-video's alleen automatisch voor LMS-spelers waarvoor een Chromecast-adres is ingesteld</desc>
         </plugin>
     </plugins>
 </extensions>
