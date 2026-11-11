@@ -144,7 +144,7 @@ sub searchResultsHandler {
                     map {
                         my $name = _itemName($_);
                         if ($source eq 'youtube') {
-                            my $url = ref $_ eq 'HASH' ? ($_->{url} || $_->{link} || '') : '';
+                            my $url = ref $_ eq 'HASH' ? ($_->{play} || $_->{url} || $_->{link} || '') : '';
                             +{ name => $name, videoId => _youtubeVideoId($url) };
                         }
                         else {
