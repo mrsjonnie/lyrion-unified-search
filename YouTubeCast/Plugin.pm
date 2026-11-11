@@ -42,10 +42,17 @@ sub initPlugin {
 
 sub shutdownPlugin {
     for my $worker (@workers) {
-        $worker->die if $worker && $worker->alive;
+        eval { $worker->die if $worker && $worker->alive };
     }
     @workers = ();
     %lastCast = ();
+
+    # The worker log is plugin-owned; remove it when the plugin is unloaded.
+    my $logDir = eval { Slim::Utils::OSDetect::dirsFor('log') };
+    if ($logDir) {
+        my $workerLog = catfile($logDir, 'youtubecast-worker.log');
+        unlink $workerLog if -f $workerLog;
+    }
 }
 
 sub getDisplayName {
