@@ -13,11 +13,11 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 The repository also includes **YouTube Cast for Chromecast**, a separate add-on
 that automatically routes LMS YouTube playback to the Chromecast assigned to the
-active LMS player. The default device host for every LMS player is `192.168.178.75` (you can
-override it per player in the add-on settings). The plugin starts the original video in the native YouTube app
+active LMS player. A player is only cast when its own Chromecast IP address or
+hostname is configured in the add-on settings; an empty field disables casting
+for that player. The plugin starts the original video in the native YouTube app
 and supplies a silent MP3 stream to LMS so the playlist, previous/next controls,
-and automatic track progression remain under LMS control. The default Chromecast host for every LMS player is
-`192.168.178.75`; you can override it per player in the settings page.
+and automatic track progression remain under LMS control.
 Cast connection failures are written to `youtubecast-worker.log` in the LMS
 log directory. The LMS YouTube plugin still resolves track metadata and
 duration through its yt-dlp runtime.
@@ -25,7 +25,7 @@ duration through its yt-dlp runtime.
 
 - LMS 8.0 or newer.
 - YouTube, Spotty, SpotOn, Deezer, Qobuz, BBC Sounds, and Podcasts are optional; matches appear only when the corresponding plugin is enabled and its search callback is available. Radio.net stations are searched live.
-- YouTube Cast requires a Chromecast or Google Cast-enabled TV with the native YouTube app, the LMS YouTube plugin, and a mapped device host reachable from LMS on TCP port 8009. Enter only the device IP or hostname, not a URL or port.
+- YouTube Cast requires a Chromecast or Google Cast-enabled TV with the native YouTube app, the LMS YouTube plugin, and a device host configured for the relevant LMS player and reachable from LMS on TCP port 8009. Leave a player's host field empty to disable casting for that player. Enter only the device IP or hostname, not a URL or port.
 - Local search uses LMS's native browse feeds, including search categories and virtual-library handling; it does not route OPML clients to the HTML search page.
 - The app and its result entries use LMS's built-in search icon.
 
@@ -36,7 +36,7 @@ Add this repository in **LMS Settings → Plugins → Additional Repositories**:
 https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
 
 Click **Apply**, install **Lyrion Unified Search** and, if desired, **YouTube
-Cast for Chromecast**, then restart LMS if requested. The default Chromecast IP is `192.168.178.75`; change it per player only if needed.
+Cast for Chromecast**, then restart LMS if requested. Configure a Chromecast IP or hostname separately for each LMS player; leave a field empty when that player should not cast.
 
 ## QNAP QPKG: yt-dlp update workaround
 
