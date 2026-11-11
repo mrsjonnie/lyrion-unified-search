@@ -17,8 +17,8 @@ active LMS player. Enter a device IP address or local hostname beside each LMS
 player in the add-on settings. A blank host keeps normal LMS YouTube audio
 playback; a configured host starts the original video in the native YouTube app
 and supplies a silent MP3 stream to LMS so the playlist, previous/next controls,
-and automatic track progression remain under LMS control. The mapping is
-player-specific; there is no global Chromecast fallback.
+and automatic track progression remain under LMS control. The default Chromecast host for every LMS player is
+`192.168.178.75`; you can override it per player in the settings page.
 Cast connection failures are written to `youtubecast-worker.log` in the LMS
 log directory. The LMS YouTube plugin still resolves track metadata and
 duration through its yt-dlp runtime.
