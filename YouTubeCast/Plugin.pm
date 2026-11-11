@@ -10,7 +10,6 @@ use Slim::Player::Client;
 use Slim::Utils::Log;
 use Slim::Utils::OSDetect;
 use Slim::Utils::Prefs;
-use Slim::Utils::PluginManager;
 
 my $prefs = preferences('plugin.youtubecast');
 my $log = Slim::Utils::Log->addLogCategory({
@@ -20,8 +19,9 @@ my $log = Slim::Utils::Log->addLogCategory({
 });
 my @workers;
 my %lastCast;
-my ($originalGetNextTrack, $originalNew);
+my $originalGetNextTrack;
 my $hooksInstalled = 0;
+my $defaultCastHost = '192.168.178.75';
 
 sub initPlugin {
     my $class = shift;
@@ -63,8 +63,6 @@ sub getDisplayName {
 
 sub _installYoutubeHooks {
     return if $hooksInstalled;
-    return unless Slim::Utils::PluginManager->isEnabled('Plugins::YouTube::Plugin');
-
     my $loaded = eval { require Plugins::YouTube::ProtocolHandler; 1 };
     unless ($loaded && Plugins::YouTube::ProtocolHandler->can('getNextTrack')) {
         $log->warn('Could not load the official YouTube protocol handler; automatic casting is unavailable');
@@ -141,7 +139,7 @@ sub _startCastForVideoId {
     my ($client, $videoId) = @_;
     return (0, 'Invalid YouTube video ID') unless $videoId && $videoId =~ /\A[A-Za-z0-9_-]{11}\z/;
 
-    my $host = _castHostForClient($client);
+    my $host = _castHostForClient($client) || $defaultCastHost;
     $host =~ s/^\s+|\s+$//g;
     unless (length $host) {
         $log->warn('No Chromecast host is configured for this LMS player');
@@ -215,7 +213,7 @@ sub _castHostForClient {
             if $clientName && lc($entry->[0]) eq lc($clientName);
     }
 
-    return '';
+    return $defaultCastHost;
 }
 
 sub _validHost {
