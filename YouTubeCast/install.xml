@@ -3,7 +3,7 @@
     <name>PLUGIN_YOUTUBECAST</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Adds a Cast to TV action to YouTube search results and starts the original video on the Chromecast assigned to the selected LMS player.</description>
+    <description>Automatically casts YouTube videos to the Chromecast assigned to the active LMS player, while preserving LMS playlist progression.</description>
     <category>interface</category>
     <id>c6ef34c4-ef6a-47b4-95a7-d62dfc486b6b</id>
     <module>Plugins::YouTubeCast::Plugin</module>
@@ -13,5 +13,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.1.10</version>
+    <version>0.1.11</version>
 </extension>
