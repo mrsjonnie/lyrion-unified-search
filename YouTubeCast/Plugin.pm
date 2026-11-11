@@ -27,7 +27,6 @@ sub initPlugin {
     my $class = shift;
 
     $prefs->init({
-        enabled       => 0,
         host_mappings => '',
     });
 
@@ -45,10 +44,16 @@ sub initPlugin {
 sub shutdownPlugin {
     _restoreYoutubeHooks();
     for my $worker (@workers) {
-        $worker->die if $worker && $worker->alive;
+        eval { $worker->die if $worker && $worker->alive };
     }
     @workers = ();
     %lastCast = ();
+
+    my $logDir = eval { Slim::Utils::OSDetect::dirsFor('log') };
+    if ($logDir) {
+        my $workerLog = catfile($logDir, 'youtubecast-worker.log');
+        unlink $workerLog if -f $workerLog;
+    }
 }
 
 sub getDisplayName {
