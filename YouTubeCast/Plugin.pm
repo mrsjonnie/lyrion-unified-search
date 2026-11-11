@@ -144,13 +144,13 @@ sub _restoreYoutubeHooks {
 }
 
 sub _silentSysread {
-    my ($vars, $config, $self, $bufferRef, $length) = @_;
+    my ($vars, $config, $self, $buffer, $length) = @_;
     my $frame = pack('H*', 'fffb9064') . ("\0" x 413);
     my $offset = $vars->{castSilenceOffset} || 0;
     my $stream = $frame x (int(($offset + $length + length($frame) - 1) / length($frame)) + 1);
     my $chunk = substr($stream, $offset, $length);
     $vars->{castSilenceOffset} = $offset + length($chunk);
-    $bufferRef = $chunk;
+    $_[3] = $chunk;
     return length($chunk);
 }
 
