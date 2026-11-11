@@ -13,9 +13,8 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 
 The repository also includes **YouTube Cast for Chromecast**, a separate add-on
 that automatically routes LMS YouTube playback to the Chromecast assigned to the
-active LMS player. Enter a device IP address or local hostname beside each LMS
-player in the add-on settings. A blank host keeps normal LMS YouTube audio
-playback; a configured host starts the original video in the native YouTube app
+active LMS player. The default device host for every LMS player is `192.168.178.75` (you can
+override it per player in the add-on settings). The plugin starts the original video in the native YouTube app
 and supplies a silent MP3 stream to LMS so the playlist, previous/next controls,
 and automatic track progression remain under LMS control. The default Chromecast host for every LMS player is
 `192.168.178.75`; you can override it per player in the settings page.
@@ -37,7 +36,7 @@ Add this repository in **LMS Settings → Plugins → Additional Repositories**:
 https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
 
 Click **Apply**, install **Lyrion Unified Search** and, if desired, **YouTube
-Cast for Chromecast**, then restart LMS if requested. Configure a Chromecast IP or hostname per LMS player in **Settings → Plugins → YouTube Cast for Chromecast**. Leave it blank for normal LMS YouTube audio.
+Cast for Chromecast**, then restart LMS if requested. The default Chromecast IP is `192.168.178.75`; change it per player only if needed.
 
 ## QNAP QPKG: yt-dlp update workaround
 
@@ -55,6 +54,6 @@ A GitHub Actions workflow mirrors the upstream [philippe44/LMS-YouTube](https://
 
 The GitHub Actions workflow packages all add-ons using the versions in their respective `install.xml` files, calculates their SHA-1 hashes, updates `repo.xml`, and publishes a release tagged with the UnifiedSearch version. Bump the version of each changed add-on before publishing a new release.
 
-Disabling an add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider and removes its Default and Material app menu entries; Default Logo Home returns the original server-rendered logo link. YouTube Cast automatically intercepts YouTube tracks only for players with a configured Chromecast host; unloading the plugin restores the original YouTube protocol handler.
+Disabling an add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider and removes its Default and Material app menu entries; Default Logo Home returns the original server-rendered logo link. YouTube Cast automatically intercepts YouTube tracks for all players, using `192.168.178.75` by default; unloading the plugin restores the original YouTube protocol handler.
 
 DefaultLogoHome changes the logo link in the server-rendered Default skin home page to the LMS root, not the skin-specific `/Default/` path. The package still needs an end-to-end check on the target LMS installation, including the Material Apps entry and SpotOn results.
