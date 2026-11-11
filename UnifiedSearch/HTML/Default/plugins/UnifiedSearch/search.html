@@ -62,35 +62,13 @@
 			var item = document.createElement('li');
 			item.appendChild(document.createTextNode(name));
 
-			if (source === 'youtube' && result.castAvailable && hit && /^[A-Za-z0-9_-]{11}$/.test(hit.videoId || '')) {
-				var castButton = document.createElement('button');
-				castButton.type = 'button';
-				castButton.className = 'stdclick';
-				castButton.style.marginLeft = '0.75em';
-				castButton.textContent = '[% "PLUGIN_UNIFIEDSEARCH_CAST_TO_TV" | string %]';
-				castButton.onclick = function () {
-					castButton.disabled = true;
-					castButton.textContent = '[% "PLUGIN_UNIFIEDSEARCH_CASTING" | string %]';
-					var xhr = new XMLHttpRequest();
-					xhr.open('POST', webroot + 'plugins/YouTubeCast/cast.json', true);
-					xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-					xhr.onreadystatechange = function () {
-						if (xhr.readyState !== 4) return;
-						var response = {};
-						try { response = JSON.parse(xhr.responseText || '{}'); } catch (error) {}
-						if (xhr.status >= 200 && xhr.status < 300 && response.ok) {
-							castButton.textContent = '[% "PLUGIN_UNIFIEDSEARCH_CAST_STARTED" | string %]';
-							castButton.title = response.message || '';
-						}
-						else {
-							castButton.disabled = false;
-							castButton.textContent = '[% "PLUGIN_UNIFIEDSEARCH_CAST_TO_TV" | string %]';
-							castButton.title = response.message || '[% "PLUGIN_UNIFIEDSEARCH_CAST_FAILED" | string %]';
-						}
-					};
-					xhr.send('videoId=' + encodeURIComponent(hit.videoId) + '&player=' + encodeURIComponent(player));
-				};
-				item.appendChild(castButton);
+			if (source === 'youtube' && hit && /^[A-Za-z0-9_-]{11}$/.test(hit.videoId || '') && hit.playUrl) {
+				var playLink = document.createElement('a');
+				playLink.href = webroot + 'clixmlbrowser/clicmd=playlist+play+' +
+					encodeURIComponent(hit.playUrl) + '&player=' + encodeURIComponent(player);
+				playLink.appendChild(document.createTextNode(name));
+				item.textContent = '';
+				item.appendChild(playLink);
 			}
 			list.appendChild(item);
 			count++;
