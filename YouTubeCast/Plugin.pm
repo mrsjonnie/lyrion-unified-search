@@ -101,12 +101,12 @@ sub _installYoutubeHooks {
 
 
     *{'Plugins::YouTube::ProtocolHandler::new'} = sub {
-        my ($protocolClass, $args) = \@_;
-        my $handle = $originalNew->(\@_);
+        my ($protocolClass, $args) = @_ ;
+        my $handle = $originalNew->(@_);
         if ($handle && $args && $args->{song}) {
             my $config = eval { $args->{song}->pluginData('config') } || {};
             if (($config->{source} || '') eq 'youtubecast') {
-                ${*\$handle}{vars}{sessions} ||= [];
+                ${*$handle}{vars}{sessions} ||= [];
             }
         }
         return $handle;
