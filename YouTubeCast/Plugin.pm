@@ -6,7 +6,6 @@ use base qw(Slim::Plugin::Base);
 
 use File::Basename qw(dirname);
 use File::Spec::Functions qw(catfile);
-use JSON::XS qw(encode_json);
 use Slim::Player::Client;
 use Slim::Utils::Log;
 use Slim::Utils::OSDetect;
@@ -20,7 +19,6 @@ my $log = Slim::Utils::Log->addLogCategory({
     description  => 'YouTube Cast for Chromecast',
 });
 my @workers;
-my $warnedMissingHost = 0;
 my %lastCast;
 my ($originalGetNextTrack, $originalNew);
 my $hooksInstalled = 0;
@@ -39,7 +37,6 @@ sub initPlugin {
         require Slim::Web::Pages;
         require Plugins::YouTubeCast::Settings;
         Plugins::YouTubeCast::Settings->new;
-        Slim::Web::Pages->addPageFunction('plugins/YouTubeCast/cast.json', \&castHandler);
     }
 
     _installYoutubeHooks();
@@ -135,41 +132,8 @@ sub _silentSysread {
     return length($chunk);
 }
 
-sub castHandler {
-    my ($webClient, $params, $callback, $httpClient, $response) = @_;
-    $response->content_type('application/json; charset=utf-8');
-
-    my $reply = sub {
-        my ($ok, $message) = @_;
-        my $json = encode_json({ ok => $ok ? 1 : 0, message => $message });
-        $callback->($webClient, $params, \$json, $httpClient, $response);
-    };
-
-    unless ($prefs->get('enabled')) {
-        return $reply->(0, 'YouTube Cast is disabled in plugin settings');
-    }
-
-    my $videoId = $params->{videoId} || '';
-    unless ($videoId =~ /\A[A-Za-z0-9_-]{11}\z/) {
-        return $reply->(0, 'Invalid YouTube video ID');
-    }
-
-    my $playerId = $params->{player} || '';
-    my ($player) = grep {
-        defined $_->id && $_->id eq $playerId
-    } Slim::Player::Client::clients();
-
-    unless ($player) {
-        return $reply->(0, 'The selected LMS player is not available');
-    }
-
-    my ($ok, $message) = _startCastForVideoId($player, $videoId);
-    return $reply->($ok, $message);
-}
-
 sub _startCastForVideoId {
     my ($client, $videoId) = @_;
-    return (0, 'YouTube Cast is disabled in plugin settings') unless $prefs->get('enabled');
     return (0, 'Invalid YouTube video ID') unless $videoId && $videoId =~ /\A[A-Za-z0-9_-]{11}\z/;
 
     my $host = _castHostForClient($client);
@@ -217,7 +181,7 @@ sub _startCastForVideoId {
     push @workers, $worker;
     $lastCast{$clientId} = { host => $host, videoId => $videoId, time => $now };
     my $playerName = $client && ($client->name || $client->id) || 'unknown LMS player';
-    $log->info("Explicit YouTube Cast requested for video $videoId on $playerName ($host)");
+    $log->info("Automatic YouTube video cast requested for $videoId on $playerName ($host)");
     return (1, 'Cast request sent to the TV');
 }
 
