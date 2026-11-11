@@ -19,7 +19,7 @@ my $log = Slim::Utils::Log->addLogCategory({
 });
 my @workers;
 my %lastCast;
-my $originalGetNextTrack;
+my ($originalGetNextTrack, $originalNew);
 my $hooksInstalled = 0;
 my $defaultCastHost = '192.168.178.75';
 
@@ -71,6 +71,7 @@ sub _installYoutubeHooks {
 
     no strict 'refs';
     $originalGetNextTrack = \&{'Plugins::YouTube::ProtocolHandler::getNextTrack'};
+    $originalNew = \&{'Plugins::YouTube::ProtocolHandler::new'};
 
     *{'Plugins::YouTube::ProtocolHandler::getNextTrack'} = sub {
         my ($protocolClass, $song, $successCb, $errorCb) = @_;
@@ -99,6 +100,18 @@ sub _installYoutubeHooks {
 
 
 
+    *{'Plugins::YouTube::ProtocolHandler::new'} = sub {
+        my ($protocolClass, $args) = \@_;
+        my $handle = $originalNew->(\@_);
+        if ($handle && $args && $args->{song}) {
+            my $config = eval { $args->{song}->pluginData('config') } || {};
+            if (($config->{source} || '') eq 'youtubecast') {
+                ${*\$handle}{vars}{sessions} ||= [];
+            }
+        }
+        return $handle;
+    };
+
     $hooksInstalled = 1;
     $log->info('Automatic YouTube Cast playback hook installed');
 }
@@ -107,7 +120,9 @@ sub _restoreYoutubeHooks {
     return unless $hooksInstalled;
     no strict 'refs';
     *{'Plugins::YouTube::ProtocolHandler::getNextTrack'} = $originalGetNextTrack if $originalGetNextTrack;
+    *{'Plugins::YouTube::ProtocolHandler::new'} = $originalNew if $originalNew;
     $originalGetNextTrack = undef;
+    $originalNew = undef;
     $hooksInstalled = 0;
 }
 
