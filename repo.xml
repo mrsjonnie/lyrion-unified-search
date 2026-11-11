@@ -12,19 +12,19 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.3.16"
+            version="0.3.17"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="a8699fba0337a8eed9c6bbd82e1333d1c4e990c4"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.16/UnifiedSearch-0.3.16.zip"
+            sha="ccc5f3ffd140e87ab2e8a12fb9386f31b9f4ea90"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.17/UnifiedSearch-0.3.17.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
             <title lang="EN">Lyrion Unified Search</title>
             <title lang="NL">Lyrion Unified Search</title>
-            <desc lang="EN">Live search with up to three results per source, including YouTube video casting to Chromecast</desc>
-            <desc lang="NL">Live zoeken met maximaal drie resultaten per bron, inclusief YouTube-video's casten naar Chromecast</desc>
+            <desc lang="EN">Live search with up to three results per source, with YouTube playback routed through the selected LMS player</desc>
+            <desc lang="NL">Live zoeken met maximaal drie resultaten per bron, waarbij YouTube via de geselecteerde LMS-speler wordt afgespeeld</desc>
         </plugin>
         <plugin
             name="DefaultLogoHome"
@@ -32,8 +32,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="5d0dd53c02b8b246cda638c4ce7e984483b7c39e"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.16/DefaultLogoHome-0.1.5.zip"
+            sha="c80766329f979adab1b8eb79253c92f02b9de3fb"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.17/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
         >
@@ -44,19 +44,19 @@
         </plugin>
         <plugin
             name="YouTubeCast"
-            version="0.1.10"
+            version="0.1.11"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="94a06643192e91d5528ae4d1f4521506e77774be"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.16/YouTubeCast-0.1.10.zip"
+            sha="9be4872641143de89541749003cf4daa0366f11a"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.17/YouTubeCast-0.1.11.zip"
             category="interface"
             creator="mrsjonnie"
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Adds a Cast to TV action to YouTube search results and starts the original video on the Chromecast assigned to the selected LMS player</desc>
-            <desc lang="NL">Voegt een knop Cast naar TV toe aan YouTube-zoekresultaten en start de originele video op de Chromecast van de geselecteerde LMS-speler</desc>
+            <desc lang="EN">Automatically casts YouTube videos to the Chromecast assigned to the LMS player; blank host keeps normal LMS audio</desc>
+            <desc lang="NL">Cast YouTube-video's automatisch naar de Chromecast van de LMS-speler; een leeg adres behoudt normale LMS-audio</desc>
         </plugin>
     </plugins>
 </extensions>
