@@ -12,21 +12,16 @@ A small add-on for Lyrion Music Server (LMS) that adds search entries to LMS Glo
 - Uses literal display names for the plugin and search items, so missing translation loading cannot leave PLUGIN_UNIFIEDSEARCH visible.
 
 The repository also includes **YouTube Cast for Chromecast**, a separate add-on
-that starts the native YouTube app on a configured Google Cast device whenever
-an LMS YouTube track receives a Play request. Casting uses the original track
-URL, starts the native YouTube app using its MDX/Lounge session, and does not
-wait for LMS to start or transcode the audio. The LMS Play request targets the
-currently selected playlist video. Enable automatic casting and set
-the Chromecast IP address or local hostname beside each LMS player in the
-add-on settings; the selected player determines the target.
-The LMS YouTube plugin streams audio to its selected LMS player; this add-on
-independently starts the video on the mapped TV.
+that automatically routes LMS YouTube playback to the Chromecast assigned to the
+active LMS player. Enter a device IP address or local hostname beside each LMS
+player in the add-on settings. A blank host keeps normal LMS YouTube audio
+playback; a configured host starts the original video in the native YouTube app
+and supplies a silent MP3 stream to LMS so the playlist, previous/next controls,
+and automatic track progression remain under LMS control. The mapping is
+player-specific; there is no global Chromecast fallback.
 Cast connection failures are written to `youtubecast-worker.log` in the LMS
-log directory. Process-start failures include the Perl executable, worker
-path, and OS error in the LMS log. On Linux systems, the LMS YouTube plugin
-must also have a working yt-dlp runtime; missing system libraries such as
-`libutil.so.1` prevent LMS from resolving playable YouTube tracks.
-
+log directory. The LMS YouTube plugin still resolves track metadata and
+duration through its yt-dlp runtime.
 ## Compatibility and requirements
 
 - LMS 8.0 or newer.
@@ -42,9 +37,7 @@ Add this repository in **LMS Settings → Plugins → Additional Repositories**:
 https://raw.githubusercontent.com/mrsjonnie/lyrion-unified-search/main/repo.xml
 
 Click **Apply**, install **Lyrion Unified Search** and, if desired, **YouTube
-Cast for Chromecast**, then restart LMS if requested. Configure the Chromecast
-host in **Settings → Plugins → YouTube Cast for Chromecast** before enabling
-automatic casting.
+Cast for Chromecast**, then restart LMS if requested. Configure a Chromecast IP or hostname per LMS player in **Settings → Plugins → YouTube Cast for Chromecast**. Leave it blank for normal LMS YouTube audio.
 
 ## QNAP QPKG: yt-dlp update workaround
 
@@ -62,6 +55,6 @@ A GitHub Actions workflow mirrors the upstream [philippe44/LMS-YouTube](https://
 
 The GitHub Actions workflow packages all add-ons using the versions in their respective `install.xml` files, calculates their SHA-1 hashes, updates `repo.xml`, and publishes a release tagged with the UnifiedSearch version. Bump the version of each changed add-on before publishing a new release.
 
-Disabling an add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider and removes its Default and Material app menu entries; Default Logo Home returns the original server-rendered logo link. YouTube Cast only reacts when enabled and a Chromecast host is configured.
+Disabling an add-on removes its contribution after the LMS web page is refreshed. Unified Search deregisters its Global Search provider and removes its Default and Material app menu entries; Default Logo Home returns the original server-rendered logo link. YouTube Cast automatically intercepts YouTube tracks only for players with a configured Chromecast host; unloading the plugin restores the original YouTube protocol handler.
 
 DefaultLogoHome changes the logo link in the server-rendered Default skin home page to the LMS root, not the skin-specific `/Default/` path. The package still needs an end-to-end check on the target LMS installation, including the Material Apps entry and SpotOn results.
