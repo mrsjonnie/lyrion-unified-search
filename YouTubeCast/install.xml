@@ -3,7 +3,7 @@
     <name>PLUGIN_YOUTUBECAST</name>
     <creator>mrsjonnie</creator>
     <defaultState>enabled</defaultState>
-    <description>Automatically casts YouTube videos to 192.168.178.75 by default for every LMS player, while preserving LMS playlist progression.</description>
+    <description>Automatically casts YouTube videos only for LMS players with a configured Chromecast host, while preserving LMS playlist progression.</description>
     <category>interface</category>
     <id>c6ef34c4-ef6a-47b4-95a7-d62dfc486b6b</id>
     <module>Plugins::YouTubeCast::Plugin</module>
@@ -13,5 +13,5 @@
         <maxVersion>*</maxVersion>
     </targetApplication>
     <type>2</type>
-    <version>0.1.13</version>
+    <version>0.1.14</version>
 </extension>
