@@ -16,7 +16,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="a6917d484ea0b3138e66b21e91b5b3ac5e742ab2"
+            sha="fc4b10dba112571bd68977ef57f441ae7e14dce8"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/UnifiedSearch-0.3.18.zip"
             category="musicservices"
             creator="mrsjonnie"
@@ -32,7 +32,7 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="823b838231355098c56f4764f39149e0cecdd5ed"
+            sha="e716aa41214f05248e9e3e46e4544b9001d3afb6"
             url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
@@ -44,12 +44,12 @@
         </plugin>
         <plugin
             name="YouTubeCast"
-            version="0.1.12"
+            version="0.1.13"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="c4fd98ebf21bbd30dd96df61a67f34d1f0889989"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/YouTubeCast-0.1.12.zip"
+            sha="523485bce2aaf2f187eefdfda7542a00226d868d"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/YouTubeCast-0.1.13.zip"
             category="interface"
             creator="mrsjonnie"
         >
