@@ -163,15 +163,18 @@ sub _startCastForVideoId {
 
     my $pluginDir = dirname(__FILE__);
     my $workerScript = catfile($pluginDir, 'cast_worker.pl');
-    my $workerOptions = { autodie => 1, die_upon_destroy => 0 };
     my $logDir = Slim::Utils::OSDetect::dirsFor('log');
-    $workerOptions->{stderr} = catfile($logDir, 'youtubecast-worker.log') if $logDir;
+    my $workerLog = $logDir ? catfile($logDir, 'youtubecast-worker.log') : '';
 
+    # Do not pass stderr through Proc::Background here: LMS replaces STDERR
+    # with its Log::Trapper object, which Proc::Background cannot reopen.
+    # The child worker redirects its own STDERR after it has started.
     my $worker = eval {
         require Proc::Background;
         Proc::Background->new({
-            %$workerOptions,
-            command => [$^X, '-I', $pluginDir, $workerScript, $host, $videoId],
+            autodie => 1,
+            die_upon_destroy => 0,
+            command => [$^X, '-I', $pluginDir, $workerScript, $host, $videoId, $workerLog],
         });
     };
 
