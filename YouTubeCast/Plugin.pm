@@ -11,6 +11,7 @@ use Slim::Player::Client;
 use Slim::Utils::Log;
 use Slim::Utils::OSDetect;
 use Slim::Utils::Prefs;
+use Slim::Utils::PluginManager;
 
 my $prefs = preferences('plugin.youtubecast');
 my $log = Slim::Utils::Log->addLogCategory({
@@ -21,6 +22,8 @@ my $log = Slim::Utils::Log->addLogCategory({
 my @workers;
 my $warnedMissingHost = 0;
 my %lastCast;
+my ($originalGetNextTrack, $originalNew);
+my $hooksInstalled = 0;
 
 sub initPlugin {
     my $class = shift;
@@ -38,9 +41,12 @@ sub initPlugin {
         Plugins::YouTubeCast::Settings->new;
         Slim::Web::Pages->addPageFunction('plugins/YouTubeCast/cast.json', \&castHandler);
     }
+
+    _installYoutubeHooks();
 }
 
 sub shutdownPlugin {
+    _restoreYoutubeHooks();
     for my $worker (@workers) {
         eval { $worker->die if $worker && $worker->alive };
     }
@@ -57,6 +63,95 @@ sub shutdownPlugin {
 
 sub getDisplayName {
     return 'PLUGIN_YOUTUBECAST';
+}
+
+
+sub _installYoutubeHooks {
+    return if $hooksInstalled;
+    return unless Slim::Utils::PluginManager->isEnabled('Plugins::YouTube::Plugin');
+
+    my $loaded = eval { require Plugins::YouTube::ProtocolHandler; 1 };
+    unless ($loaded && Plugins::YouTube::ProtocolHandler->can('getNextTrack')) {
+        $log->warn('Could not load the official YouTube protocol handler; automatic casting is unavailable');
+        return;
+    }
+
+    no strict 'refs';
+    $originalGetNextTrack = \&{'Plugins::YouTube::ProtocolHandler::getNextTrack'};
+    $originalNew = \&{'Plugins::YouTube::ProtocolHandler::new'};
+
+    *{'Plugins::YouTube::ProtocolHandler::getNextTrack'} = sub {
+        my ($protocolClass, $song, $successCb, $errorCb) = @_;
+        my $client = eval { $song->master };
+        my $host = _castHostForClient($client);
+        return $originalGetNextTrack->(@_)
+            unless $prefs->get('enabled') && length($host || '');
+
+        my $videoId = _youtubeVideoId(eval { $song->track->url } || '');
+        return $originalGetNextTrack->(@_) unless $videoId;
+
+        my $castSuccess = sub {
+            my $config = $song->pluginData('config') || {};
+            $config->{format}  = 'mp3';
+            $config->{source}  = 'youtubecast';
+            $config->{handler} = Plugins::YouTubeCast::SilentHandler->new;
+            $config->{sysread} = \&_silentSysread;
+
+            my ($ok, $message) = _startCastForVideoId($client, $videoId);
+            $log->warn("Automatic cast failed for $videoId: $message") unless $ok;
+            $successCb->();
+        };
+
+        return $originalGetNextTrack->($protocolClass, $song, $castSuccess, $errorCb);
+    };
+
+    *{'Plugins::YouTube::ProtocolHandler::new'} = sub {
+        my ($protocolClass, $args) = @_;
+        my $handle = $originalNew->(@_);
+        if ($handle && $args && $args->{song}) {
+            my $config = eval { $args->{song}->pluginData('config') } || {};
+            if (($config->{source} || '') eq 'youtubecast') {
+                \${*$handle}{vars}{sessions} ||= [];
+            }
+        }
+        return $handle;
+    };
+
+    $hooksInstalled = package Plugins::YouTubeCast::SilentHandler;
+
+use strict;
+use warnings;
+
+sub new { return bless {}, shift; }
+sub flush { return 1; }
+sub getStartOffset {
+    my ($self, $url, $startTime, $callback) = @_;
+    $callback->(0);
+}
+
+1;
+    $log->info('Automatic YouTube Cast playback hook installed');
+}
+
+sub _restoreYoutubeHooks {
+    return unless $hooksInstalled;
+    no strict 'refs';
+    *{'Plugins::YouTube::ProtocolHandler::getNextTrack'} = $originalGetNextTrack if $originalGetNextTrack;
+    *{'Plugins::YouTube::ProtocolHandler::new'} = $originalNew if $originalNew;
+    $originalGetNextTrack = undef;
+    $originalNew = undef;
+    $hooksInstalled = 0;
+}
+
+sub _silentSysread {
+    my ($vars, $config, $self, $bufferRef, $length) = @_;
+    my $frame = pack('H*', 'fffb9064') . ("\0" x 413);
+    my $offset = $vars->{castSilenceOffset} || 0;
+    my $stream = $frame x (int(($offset + $length + length($frame) - 1) / length($frame)) + 1);
+    my $chunk = substr($stream, $offset, $length);
+    $vars->{castSilenceOffset} = $offset + length($chunk);
+    $bufferRef = $chunk;
+    return length($chunk);
 }
 
 sub castHandler {
