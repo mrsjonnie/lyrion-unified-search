@@ -62,10 +62,6 @@ PLUGIN_UNIFIEDSEARCH_PODCAST
 	EN	Podcasts
 	NL	Podcasts
 
-PLUGIN_UNIFIEDSEARCH_CAST_TO_TV
-	EN	Cast to TV
-	NL	Cast naar TV
-
 PLUGIN_UNIFIEDSEARCH_CASTING
 	EN	Casting...
 	NL	Bezig met casten...
