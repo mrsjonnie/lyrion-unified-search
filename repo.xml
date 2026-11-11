@@ -12,12 +12,12 @@
     <plugins>
         <plugin
             name="UnifiedSearch"
-            version="0.3.18"
+            version="0.3.19"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="fc4b10dba112571bd68977ef57f441ae7e14dce8"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/UnifiedSearch-0.3.18.zip"
+            sha="4dea420a0055a06b8cfce6308d0d6e3588486ed6"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.19/UnifiedSearch-0.3.19.zip"
             category="musicservices"
             creator="mrsjonnie"
         >
@@ -32,8 +32,8 @@
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="e716aa41214f05248e9e3e46e4544b9001d3afb6"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/DefaultLogoHome-0.1.5.zip"
+            sha="f61776fbe71ad803cda54ebd01801d7073b1fdea"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.19/DefaultLogoHome-0.1.5.zip"
             category="interface"
             creator="mrsjonnie"
         >
@@ -44,19 +44,19 @@
         </plugin>
         <plugin
             name="YouTubeCast"
-            version="0.1.13"
+            version="0.1.14"
             target="unix|mac|windows"
             minTarget="8.0"
             maxTarget="*"
-            sha="523485bce2aaf2f187eefdfda7542a00226d868d"
-            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.18/YouTubeCast-0.1.13.zip"
+            sha="fcaa7a0455f9834b02f595ea4ae0965b32515a8b"
+            url="https://github.com/mrsjonnie/lyrion-unified-search/releases/download/v0.3.19/YouTubeCast-0.1.14.zip"
             category="interface"
             creator="mrsjonnie"
         >
             <title lang="EN">YouTube Cast for Chromecast</title>
             <title lang="NL">YouTube Cast voor Chromecast</title>
-            <desc lang="EN">Automatically casts YouTube videos to 192.168.178.75 by default; host can be overridden per LMS player</desc>
-            <desc lang="NL">Cast YouTube-video's standaard automatisch naar 192.168.178.75; het adres kan per LMS-speler worden aangepast</desc>
+            <desc lang="EN">Automatically casts YouTube videos only for LMS players with a configured Chromecast host</desc>
+            <desc lang="NL">Cast YouTube-video's alleen automatisch voor LMS-spelers waarvoor een Chromecast-adres is ingesteld</desc>
         </plugin>
     </plugins>
 </extensions>
