@@ -29,7 +29,6 @@ sub initPlugin {
     my $class = shift;
 
     $prefs->init({
-        enabled       => 0,
         host_mappings => '',
     });
 
@@ -85,7 +84,7 @@ sub _installYoutubeHooks {
         my $client = eval { $song->master };
         my $host = _castHostForClient($client);
         return $originalGetNextTrack->(@_)
-            unless $prefs->get('enabled') && length($host || '');
+            unless length($host || '');
 
         my $videoId = _youtubeVideoId(eval { $song->track->url } || '');
         return $originalGetNextTrack->(@_) unless $videoId;
@@ -164,9 +163,6 @@ sub castHandler {
         $callback->($webClient, $params, \$json, $httpClient, $response);
     };
 
-    unless ($prefs->get('enabled')) {
-        return $reply->(0, 'YouTube Cast is disabled in plugin settings');
-    }
 
     my $videoId = $params->{videoId} || '';
     unless ($videoId =~ /\A[A-Za-z0-9_-]{11}\z/) {
@@ -188,7 +184,6 @@ sub castHandler {
 
 sub _startCastForVideoId {
     my ($client, $videoId) = @_;
-    return (0, 'YouTube Cast is disabled in plugin settings') unless $prefs->get('enabled');
     return (0, 'Invalid YouTube video ID') unless $videoId && $videoId =~ /\A[A-Za-z0-9_-]{11}\z/;
 
     my $host = _castHostForClient($client);
