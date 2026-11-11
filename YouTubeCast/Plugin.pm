@@ -21,7 +21,6 @@ my @workers;
 my %lastCast;
 my ($originalGetNextTrack, $originalNew);
 my $hooksInstalled = 0;
-my $defaultCastHost = '192.168.178.75';
 
 sub initPlugin {
     my $class = shift;
@@ -141,7 +140,7 @@ sub _startCastForVideoId {
     my ($client, $videoId) = @_;
     return (0, 'Invalid YouTube video ID') unless $videoId && $videoId =~ /\A[A-Za-z0-9_-]{11}\z/;
 
-    my $host = _castHostForClient($client) || $defaultCastHost;
+    my $host = _castHostForClient($client);
     $host =~ s/^\s+|\s+$//g;
     unless (length $host) {
         $log->warn('No Chromecast host is configured for this LMS player');
@@ -218,7 +217,7 @@ sub _castHostForClient {
             if $clientName && lc($entry->[0]) eq lc($clientName);
     }
 
-    return $defaultCastHost;
+    return;
 }
 
 sub _validHost {
