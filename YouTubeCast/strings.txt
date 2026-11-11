@@ -25,3 +25,7 @@ PLUGIN_YOUTUBECAST_PLAYER
 PLUGIN_YOUTUBECAST_NO_PLAYERS
 	EN	No LMS players are currently available. Connect a player and reopen this page to configure its Chromecast.
 	NL	Er zijn geen LMS-spelers beschikbaar. Verbind een speler en open deze pagina opnieuw om de Chromecast in te stellen.
+
+PLUGIN_YOUTUBECAST_HOST
+	EN	Chromecast IP address / hostname
+	NL	Chromecast-IP-adres / hostnaam
