@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.16';
+our $VERSION = '0.3.17';
 
 my $enabled = 0;
 
@@ -138,14 +138,12 @@ sub searchResultsHandler {
             $formatted{$source} = {
                 name          => $sources->{$source}{name},
                 error         => $sources->{$source}{error},
-                castAvailable => $source eq 'youtube'
-                    && Slim::Utils::PluginManager->isEnabled('Plugins::YouTubeCast::Plugin') ? 1 : 0,
-                items => [
+                                items => [
                     map {
                         my $name = _itemName($_);
                         if ($source eq 'youtube') {
                             my $url = ref $_ eq 'HASH' ? ($_->{play} || $_->{url} || $_->{link} || '') : '';
-                            +{ name => $name, videoId => _youtubeVideoId($url) };
+                            +{ name => $name, videoId => _youtubeVideoId($url), playUrl => $url };
                         }
                         else {
                             +{ name => $source eq 'bbcsounds' ? _bbcDisplayName($name) : $name };
