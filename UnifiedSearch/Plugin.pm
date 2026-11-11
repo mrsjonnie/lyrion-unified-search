@@ -12,7 +12,7 @@ use Slim::Utils::Strings qw(string);
 use JSON::XS qw(encode_json decode_json);
 use URI::Escape qw(uri_escape_utf8);
 
-our $VERSION = '0.3.17';
+our $VERSION = '0.3.18';
 
 my $enabled = 0;
 
