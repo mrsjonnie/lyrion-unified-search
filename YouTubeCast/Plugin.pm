@@ -29,6 +29,7 @@ sub initPlugin {
     my $class = shift;
 
     $prefs->init({
+        enabled       => 0,
         host_mappings => '',
     });
 
@@ -47,17 +48,10 @@ sub initPlugin {
 sub shutdownPlugin {
     _restoreYoutubeHooks();
     for my $worker (@workers) {
-        eval { $worker->die if $worker && $worker->alive };
+        $worker->die if $worker && $worker->alive;
     }
     @workers = ();
     %lastCast = ();
-
-    # The worker log is plugin-owned; remove it when the plugin is unloaded.
-    my $logDir = eval { Slim::Utils::OSDetect::dirsFor('log') };
-    if ($logDir) {
-        my $workerLog = catfile($logDir, 'youtubecast-worker.log');
-        unlink $workerLog if -f $workerLog;
-    }
 }
 
 sub getDisplayName {
@@ -110,25 +104,13 @@ sub _installYoutubeHooks {
         if ($handle && $args && $args->{song}) {
             my $config = eval { $args->{song}->pluginData('config') } || {};
             if (($config->{source} || '') eq 'youtubecast') {
-                \${*$handle}{vars}{sessions} ||= [];
+                ${*$handle}{vars}{sessions} ||= [];
             }
         }
         return $handle;
     };
 
-    $hooksInstalled = package Plugins::YouTubeCast::SilentHandler;
-
-use strict;
-use warnings;
-
-sub new { return bless {}, shift; }
-sub flush { return 1; }
-sub getStartOffset {
-    my ($self, $url, $startTime, $callback) = @_;
-    $callback->(0);
-}
-
-1;
+    $hooksInstalled = 1;
     $log->info('Automatic YouTube Cast playback hook installed');
 }
 
@@ -163,6 +145,9 @@ sub castHandler {
         $callback->($webClient, $params, \$json, $httpClient, $response);
     };
 
+    unless ($prefs->get('enabled')) {
+        return $reply->(0, 'YouTube Cast is disabled in plugin settings');
+    }
 
     my $videoId = $params->{videoId} || '';
     unless ($videoId =~ /\A[A-Za-z0-9_-]{11}\z/) {
@@ -184,12 +169,13 @@ sub castHandler {
 
 sub _startCastForVideoId {
     my ($client, $videoId) = @_;
+    return (0, 'YouTube Cast is disabled in plugin settings') unless $prefs->get('enabled');
     return (0, 'Invalid YouTube video ID') unless $videoId && $videoId =~ /\A[A-Za-z0-9_-]{11}\z/;
 
     my $host = _castHostForClient($client);
     $host =~ s/^\s+|\s+$//g;
     unless (length $host) {
-        $log->warn('YouTube Cast is enabled, but no Chromecast host is configured for this player');
+        $log->warn('No Chromecast host is configured for this LMS player');
         return (0, 'No Chromecast host is configured for the selected LMS player');
     }
     unless (_validHost($host)) {
@@ -276,6 +262,19 @@ sub _youtubeVideoId {
     return $1 if $url =~ m{\Ayoutube://([A-Za-z0-9_-]{11})(?:[?&]|\z)}i;
 
     return;
+}
+
+
+package Plugins::YouTubeCast::SilentHandler;
+
+use strict;
+use warnings;
+
+sub new { return bless {}, shift; }
+sub flush { return 1; }
+sub getStartOffset {
+    my ($self, $url, $startTime, $callback) = @_;
+    $callback->(0);
 }
 
 1;
